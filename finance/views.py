@@ -5,6 +5,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import Category, FinancialAccount, Transaction
 from .pagination import FinancePagination
@@ -13,6 +14,8 @@ from .serializers import (
     FinancialAccountSerializer,
     TransactionSerializer,
 )
+from .report_serializers import FinanceReportSerializer
+from .report_services import build_finance_report
 
 
 class OwnedListCreateView(GenericAPIView):
@@ -140,3 +143,24 @@ class TransactionListCreateView(OwnedListCreateView):
 class TransactionDetailView(OwnedDetailView):
     model = Transaction
     serializer_class = TransactionSerializer
+
+
+class FinanceReportView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        period = request.query_params.get("period", "month")
+        date_from = request.query_params.get("date_from")
+        date_to = request.query_params.get("date_to")
+
+        report = build_finance_report(
+            user=request.user,
+            period=period,
+            date_from=date_from,
+            date_to=date_to,
+        )
+
+        serializer = FinanceReportSerializer(data=report)
+        serializer.is_valid(raise_exception=True)
+
+        return Response(serializer.validated_data)

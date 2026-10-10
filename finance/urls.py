@@ -7,6 +7,7 @@ from .views import (
     CategoryListCreateView,
     TransactionDetailView,
     TransactionListCreateView,
+    FinanceReportView,
 )
 
 urlpatterns = [
@@ -32,4 +33,7 @@ urlpatterns = [
         TransactionDetailView.as_view(),
         name="transaction-detail",
     ),
+    path("reports/", 
+        FinanceReportView.as_view(), 
+        name="finance-report"),
 ]
