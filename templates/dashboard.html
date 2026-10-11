@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finora — Personal Finance</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #182230;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 6%;
+            background: white;
+            border-bottom: 1px solid #e7ebf0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .language {
+            padding: 9px 12px;
+            border: 1px solid #dce2eb;
+            border-radius: 8px;
+            background: white;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 38px auto;
+            padding: 0 22px;
+        }
+
+        .welcome {
+            margin-bottom: 28px;
+        }
+
+        .welcome h1 {
+            margin-bottom: 8px;
+            font-size: 30px;
+        }
+
+        .welcome p {
+            color: #667085;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            padding: 25px;
+            background: white;
+            border: 1px solid #e7ebf0;
+            border-radius: 16px;
+            box-shadow: 0 5px 18px #18223008;
+        }
+
+        .card p {
+            color: #667085;
+            margin-top: 0;
+        }
+
+        .amount {
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .balance {
+            background: #1d4ed8;
+            color: white;
+        }
+
+        .balance p {
+            color: #dbeafe;
+        }
+
+        .section {
+            margin-top: 28px;
+            padding: 25px;
+            background: white;
+            border: 1px solid #e7ebf0;
+            border-radius: 16px;
+        }
+
+        .section h2 {
+            margin-top: 0;
+        }
+
+        .empty {
+            padding: 25px 0;
+            color: #667085;
+            text-align: center;
+        }
+
+        .api-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 18px;
+            border-radius: 9px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+        }
+
+        @media (max-width: 700px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome h1 {
+                font-size: 25px;
+            }
+
+            header {
+                padding: 18px 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+    <div class="logo">Finora</div>
+
+    <nav id="auth-navigation"
+        style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <a href="/login/"
+            style="color:#2563eb;text-decoration:none;">Sign in</a>
+
+        <a href="/register/"
+            style="padding:10px 14px;background:#2563eb;color:white;
+                border-radius:8px;text-decoration:none;">Sign up</a>
+    </nav>
+</header>
+
+    <main>
+        <section class="welcome">
+            <h1>Personal Finance Dashboard</h1>
+            <p>Track your money. Understand your spending. Plan ahead.</p>
+        </section>
+
+        <section class="cards">
+            <article class="card balance">
+                <p>Total balance</p>
+                <div class="amount" id="balance">0 UZS</div>
+            </article>
+
+            <article class="card">
+                <p>Total income</p>
+                <div class="amount" id="income">0 UZS</div>
+            </article>
+
+            <article class="card">
+                <p>Total expenses</p>
+                <div class="amount" id="expense">0 UZS</div>
+            </article>
+        </section>
+
+        <section class="section">
+    <div style="display:flex;justify-content:space-between;
+                align-items:center;gap:12px;flex-wrap:wrap;">
+        <div>
+            <h2>Recent transactions</h2>
+            <p style="color:#667085;">
+                Your latest income and expenses
+            </p>
+        </div>
+        <a href="/api/docs/" class="api-link"
+           style="margin-top:0;">Manage via API</a>
+    </div>
+
+    <div id="transactions-list" class="empty">
+        Loading transactions...
+    </div>
+</section>
+
+        <section class="section">
+            <h2>API and documentation</h2>
+            <p>Backend documentation and API testing.</p>
+            <a class="api-link" href="/api/docs/">Open Swagger</a>
+        </section>
+    </main>
+    <script src="/static/js/dashboard.js"></script>
+    <script>
+    const token = localStorage.getItem("access_token");
+    const navigation = document.getElementById("auth-navigation");
+
+    if (token) {
+        navigation.innerHTML = `
+            <span style="color:#667085;">Signed in</span>
+            <button id="logout-button"
+                style="padding:10px 14px;border:0;border-radius:8px;
+                       background:#e7ebf0;cursor:pointer;">
+                Sign out
+            </button>
+        `;
+
+        document.getElementById("logout-button").addEventListener("click", () => {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            window.location.href = "/";
+        });
+    }
+</script>
+</body>
+</html>

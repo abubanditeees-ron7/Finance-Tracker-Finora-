@@ -3,6 +3,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import (
     EmailOrUsernameTokenSerializer,
@@ -38,12 +39,19 @@ class VerifyEmailView(APIView):
     serializer_class = VerifyEmailSerializer
 
     def post(self, request):
-        serializer = VerifyEmailSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+
+        user = serializer.save()
+
+        refresh = RefreshToken.for_user(user)
 
         return Response(
-            {"message": "Email verified successfully. You can now log in."},
+            {
+                "message": "Email verified successfully.",
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+            },
             status=status.HTTP_200_OK,
         )
 

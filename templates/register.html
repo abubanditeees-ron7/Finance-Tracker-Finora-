@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register — Finora</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            background: #f4f7fb;
+            font-family: Arial, sans-serif;
+            color: #182230;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 460px;
+            padding: 30px;
+            background: white;
+            border: 1px solid #e7ebf0;
+            border-radius: 18px;
+        }
+
+        .logo { color: #2563eb; font-size: 25px; font-weight: bold; }
+        h1 { margin-bottom: 8px; }
+        .muted { color: #667085; }
+
+        label { display: block; margin: 15px 0 7px; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dce2eb;
+            border-radius: 9px;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 13px;
+            border: 0;
+            border-radius: 9px;
+            background: #2563eb;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .hidden { display: none; }
+        #message { white-space: pre-wrap; overflow-wrap: anywhere; }
+        a { color: #2563eb; }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <div class="logo">Finora</div>
+        <h1>Create account</h1>
+        <p class="muted">Start managing your finances.</p>
+
+        <form id="register-form">
+            <label for="username">Username</label>
+            <input id="username" name="username" required
+                   maxlength="150" autocomplete="username">
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required
+                   autocomplete="email">
+
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" required
+                   autocomplete="new-password">
+
+            <label for="password_confirm">Confirm password</label>
+            <input id="password_confirm" name="password_confirm"
+                   type="password" required autocomplete="new-password">
+
+            <button type="submit">Create account</button>
+        </form>
+
+        <form id="verify-form" class="hidden">
+            <h2>Verify your email</h2>
+            <p class="muted">
+                Enter the six-digit code sent to your email.
+            </p>
+
+            <label for="verify-email">Email</label>
+            <input id="verify-email" type="email" required>
+
+            <label for="code">Verification code</label>
+            <input id="code" inputmode="numeric" pattern="[0-9]{6}"
+                   minlength="6" maxlength="6" required>
+
+            <button type="submit">Verify email</button>
+        </form>
+
+        <p id="message" role="status"></p>
+
+        <p>Already registered? <a href="/login/">Sign in</a></p>
+        <a href="/">Back to dashboard</a>
+    </main>
+
+    <script>
+        const registerForm = document.getElementById("register-form");
+        const verifyForm = document.getElementById("verify-form");
+        const message = document.getElementById("message");
+
+        registerForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    message.textContent = "";
+
+    if (
+        registerForm.password.value !==
+        registerForm.password_confirm.value
+    ) {
+        message.textContent = "Passwords do not match.";
+        return;
+    }
+
+    try {
+        const response = await fetch("/api/auth/register/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: registerForm.username.value.trim(),
+                email: registerForm.email.value.trim(),
+                password: registerForm.password.value,
+                password_confirm:
+                    registerForm.password_confirm.value
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                Object.values(data)
+                    .flat()
+                    .join("\n") || "Registration failed."
+            );
+        }
+
+        // Registration does not return tokens yet.
+        document.getElementById("verify-email").value =
+            registerForm.email.value.trim();
+
+        registerForm.classList.add("hidden");
+        verifyForm.classList.remove("hidden");
+
+        message.textContent =
+            "Account created. Check the terminal for the verification code.";
+    } catch (error) {
+        message.textContent = error.message;
+    }
+});
+
+
+        verifyForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    message.textContent = "";
+
+    try {
+        const response = await fetch("/api/auth/verify-email/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: document.getElementById("verify-email").value.trim(),
+                code: document.getElementById("code").value.trim()
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(JSON.stringify(data));
+        }
+
+        console.log("Verification response:", data);
+        console.log("Access token exists:", Boolean(data.access));
+        console.log("Refresh token exists:", Boolean(data.refresh));
+
+        const accessToken = data.access;
+        const refreshToken = data.refresh;
+
+        if (!accessToken || !refreshToken) {
+            throw new Error(
+                "Tokens are missing. Check the browser console."
+            );
+        }
+
+        localStorage.setItem("access_token", accessToken);
+        localStorage.setItem("refresh_token", refreshToken);
+
+        message.textContent = "Email verified! Opening dashboard...";
+
+        window.location.href = "/dashboard/";
+    } catch (error) {
+        message.textContent = error.message;
+        console.error("Verification error:", error);
+    }
+});
+    </script>
+</body>
+</html>
