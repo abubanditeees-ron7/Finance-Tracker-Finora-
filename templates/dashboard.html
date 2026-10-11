@@ -134,39 +134,56 @@
     </style>
 </head>
 <body>
-    <header>
-    <div class="logo">Finora</div>
+    
+<header>
+    <a class="logo" href="/">Finora.</a>
 
-    <nav id="auth-navigation"
-        style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-        <a href="/login/"
-            style="color:#2563eb;text-decoration:none;">Sign in</a>
+    <nav>
+        <a class="nav-link" href="/transactions/" data-i18n="transactions">
+            Transactions
+        </a>
 
-        <a href="/register/"
-            style="padding:10px 14px;background:#2563eb;color:white;
-                border-radius:8px;text-decoration:none;">Sign up</a>
+        <a class="nav-link" href="/reports/" data-i18n="reports">
+            Financial reports
+        </a>
+
+        <a class="nav-link" href="/manage/" data-i18n="accountsCategories">
+            Accounts &amp; Categories
+        </a>
+
+        <a class="nav-link" href="/settings/" data-i18n="settings">
+            Settings
+        </a>
+
+        <span class="muted" data-i18n="signedIn">Signed in</span>
+
+        <button class="secondary" id="logout-button" data-i18n="signOut">
+            Sign out
+        </button>
     </nav>
 </header>
 
     <main>
         <section class="welcome">
-            <h1>Personal Finance Dashboard</h1>
-            <p>Track your money. Understand your spending. Plan ahead.</p>
+            <h1 data-i18n="dashboardTitle">Personal Finance Dashboard</h1>
+            <p data-i18n="dashboardDescription">
+                Track your money. Understand your spending. Plan ahead.
+            </p>
         </section>
 
         <section class="cards">
             <article class="card balance">
-                <p>Total balance</p>
+                <span data-i18n="totalBalance">Total balance</span>
                 <div class="amount" id="balance">0 UZS</div>
             </article>
 
             <article class="card">
-                <p>Total income</p>
+                <span data-i18n="totalIncome">Total income</span>
                 <div class="amount" id="income">0 UZS</div>
             </article>
 
             <article class="card">
-                <p>Total expenses</p>
+                <span data-i18n="totalExpenses">Total expenses</span>
                 <div class="amount" id="expense">0 UZS</div>
             </article>
         </section>
@@ -175,27 +192,26 @@
     <div style="display:flex;justify-content:space-between;
                 align-items:center;gap:12px;flex-wrap:wrap;">
         <div>
-            <h2>Recent transactions</h2>
-            <p style="color:#667085;">
+            <h2 data-i18n="recentTransactions">Recent transactions</h2>
+            <p style="color:#667085;" data-i18n="latestTransactions">
                 Your latest income and expenses
             </p>
         </div>
-        <a href="/api/docs/" class="api-link"
-           style="margin-top:0;">Manage via API</a>
+        <p data-i18n="manageApi" href="/api/docs/" class="api-link"
+           style="margin-top:0;">Manage via API</p>
     </div>
 
-    <div id="transactions-list" class="empty">
+    <div id="transactions-list" class="empty" data-i18n="LoadingTransactions">
         Loading transactions...
     </div>
 </section>
 
         <section class="section">
-            <h2>API and documentation</h2>
-            <p>Backend documentation and API testing.</p>
-            <a class="api-link" href="/api/docs/">Open Swagger</a>
+            <h2 data-i18n="apiDocumentation">API and documentation</h2>
+            <p data-i18n="apiDescription">Backend documentation and API testing.</p>
+            <a class="api-link" data-i18n="openSwagger" href="/api/docs/">Open Swagger</a>
         </section>
     </main>
-    <script src="/static/js/dashboard.js"></script>
     <script>
     const token = localStorage.getItem("access_token");
     const navigation = document.getElementById("auth-navigation");
@@ -232,7 +248,8 @@
             window.location.href = "/";
         });
     }
-</script>   
+</script>  
+<script src="/static/js/i18n.js"></script> 
 <script src="/static/js/dashboard.js"></script>
 </body>
 </html>

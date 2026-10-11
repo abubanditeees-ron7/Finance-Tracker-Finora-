@@ -59,7 +59,9 @@ function renderTransactions(data) {
     container.replaceChildren();
 
     if (!transactions.length) {
-        container.textContent = "No transactions yet. Add your first transaction through the API.";
+        container.textContent = window.FinoraI18n
+            ? window.FinoraI18n.t("noTransactions")
+            : "No transactions yet. Add your first transaction through the API."; 
         return;
     }
 

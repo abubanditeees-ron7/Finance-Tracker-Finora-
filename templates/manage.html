@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accounts & Categories — Finora</title>
+    <title>Accounts &amp; Categories — Finora</title>
     <style>
         * { box-sizing: border-box; }
         body { margin: 0; font-family: Arial, sans-serif; background: #f4f7fb; color: #182230; }
         header { display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; padding:20px 6%; background:white; border-bottom:1px solid #e7ebf0; }
         .logo { font-size:25px; font-weight:800; color:#2563eb; text-decoration:none; }
-        nav { display:flex; gap:10px; flex-wrap:wrap; }
+        nav { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
         a { text-decoration:none; }
         button { cursor:pointer; }
         .btn { border:0; border-radius:9px; padding:11px 15px; font-weight:600; font-size:14px; }
@@ -20,13 +20,14 @@
         main { max-width:1100px; margin:35px auto; padding:0 20px; }
         h1 { margin-bottom:8px; }
         .muted { color:#667085; }
-        .tabs { display:flex; gap:10px; margin:25px 0 18px; }
+        .tabs { display:flex; gap:10px; margin:25px 0 18px; flex-wrap:wrap; }
         .tab.active { background:#2563eb; color:white; }
         .layout { display:grid; grid-template-columns:330px minmax(0,1fr); gap:20px; align-items:start; }
         .panel { min-width:0; background:white; border:1px solid #e7ebf0; border-radius:16px; padding:23px; }
         .panel h2 { margin-top:0; font-size:19px; }
         label { display:block; margin:15px 0 7px; font-size:13px; font-weight:700; }
         input, select { width:100%; padding:11px; border:1px solid #d0d5dd; border-radius:9px; font:inherit; background:white; }
+        input:focus, select:focus { outline:2px solid #bfdbfe; border-color:#2563eb; }
         .form-actions { display:flex; gap:8px; margin-top:18px; flex-wrap:wrap; }
         .message { margin-top:13px; white-space:pre-wrap; overflow-wrap:anywhere; font-size:14px; }
         .error { color:#b42318; }
@@ -47,89 +48,130 @@
 <header>
     <a class="logo" href="/">Finora.</a>
     <nav>
-        <a class="btn secondary" href="/dashboard/">Dashboard</a>
-        <a class="btn secondary" href="/transactions/">Transactions</a>
-        <button class="btn primary" id="logout-button">Sign out</button>
+        <a class="btn secondary" href="/dashboard/" data-i18n="dashboard">Dashboard</a>
+        <a class="btn secondary" href="/transactions/" data-i18n="transactions">Transactions</a>
+        <a class="btn secondary" href="/reports/" data-i18n="reports">Financial reports</a>
+        <a class="btn secondary" href="/settings/" data-i18n="settings">Settings</a>
+        <button class="btn primary" id="logout-button" data-i18n="signOut">Sign out</button>
     </nav>
 </header>
 
 <main>
-    <h1>Accounts & Categories</h1>
-    <p class="muted">Manage the accounts and categories used in your transactions.</p>
+    <h1 data-i18n="manageHeading">Accounts &amp; Categories</h1>
+    <p class="muted" data-i18n="manageDescription">
+        Manage the accounts and categories used in your transactions.
+    </p>
 
     <div class="tabs">
-        <button class="btn tab active" data-panel="accounts-panel">Accounts</button>
-        <button class="btn tab secondary" data-panel="categories-panel">Categories</button>
+        <button class="btn tab active" type="button"
+                data-panel="accounts-panel" data-i18n="accountsTab">
+            Accounts
+        </button>
+        <button class="btn tab secondary" type="button"
+                data-panel="categories-panel" data-i18n="categoriesTab">
+            Categories
+        </button>
     </div>
 
     <section id="accounts-panel" class="layout">
         <div class="panel">
-            <h2 id="account-form-title">Add account</h2>
-            <form id="account-form">
-                <label for="account-name">Account name</label>
-                <input id="account-name" maxlength="100" placeholder="My wallet" required>
+            <h2 id="account-form-title" data-i18n="addAccount">Add account</h2>
 
-                <label for="account-type">Account type</label>
+            <form id="account-form">
+                <label for="account-name" data-i18n="accountName">Account name</label>
+                <input id="account-name" maxlength="100"
+                       placeholder="My wallet"
+                       data-i18n-placeholder="accountNamePlaceholder" required>
+
+                <label for="account-type" data-i18n="accountType">Account type</label>
                 <select id="account-type" required>
-                    <option value="cash">Cash</option>
-                    <option value="card">Bank card</option>
-                    <option value="bank">Bank account</option>
-                    <option value="other">Other</option>
+                    <option value="cash" data-i18n="cash">Cash</option>
+                    <option value="card" data-i18n="bankCard">Bank card</option>
+                    <option value="bank" data-i18n="bankAccount">Bank account</option>
+                    <option value="other" data-i18n="other">Other</option>
                 </select>
 
-                <label for="bank-name">Bank name (optional)</label>
-                <input id="bank-name" maxlength="100" placeholder="Bank name">
+                <label for="bank-name" data-i18n="bankNameOptional">
+                    Bank name (optional)
+                </label>
+                <input id="bank-name" maxlength="100"
+                       placeholder="Bank name"
+                       data-i18n-placeholder="bankNameOptional">
 
-                <label for="card-number">Card number or label (optional)</label>
-                <input id="card-number" maxlength="30" placeholder="Only a reference, never PIN/CVV">
-                <p class="muted" style="font-size:12px;">Avoid entering sensitive card details. This is only for your own reference.</p>
+                <label for="card-number" data-i18n="cardLabelOptional">
+                    Card number or label (optional)
+                </label>
+                <input id="card-number" maxlength="30"
+                       placeholder="Only a reference, never PIN/CVV"
+                       data-i18n-placeholder="cardReferencePlaceholder">
 
-                <label for="account-color">Color</label>
+                <p class="muted" style="font-size:12px;"
+                   data-i18n="cardSecurityNote">
+                    Avoid entering sensitive card details. This is only for your own reference.
+                </p>
+
+                <label for="account-color" data-i18n="color">Color</label>
                 <input id="account-color" type="color" value="#0D9488">
 
                 <div class="form-actions">
-                    <button class="btn primary" id="account-save" type="submit">Save account</button>
-                    <button class="btn secondary" id="account-cancel" type="button" hidden>Cancel</button>
+                    <button class="btn primary" id="account-save" type="submit"
+                            data-i18n="saveAccount">Save account</button>
+                    <button class="btn secondary" id="account-cancel"
+                            type="button" data-i18n="cancel" hidden>Cancel</button>
                 </div>
+
                 <div id="account-message" class="message" role="status"></div>
             </form>
         </div>
+
         <div class="panel">
-            <h2>Your accounts</h2>
-            <div id="accounts-list" class="empty">Loading accounts...</div>
+            <h2 data-i18n="yourAccounts">Your accounts</h2>
+            <div id="accounts-list" class="empty" data-i18n="loadingAccounts">
+                Loading accounts...
+            </div>
         </div>
     </section>
 
     <section id="categories-panel" class="layout" hidden>
         <div class="panel">
-            <h2 id="category-form-title">Add category</h2>
-            <form id="category-form">
-                <label for="category-name">Category name</label>
-                <input id="category-name" maxlength="100" placeholder="Food, Salary..." required>
+            <h2 id="category-form-title" data-i18n="addCategory">Add category</h2>
 
-                <label for="category-kind">Category type</label>
+            <form id="category-form">
+                <label for="category-name" data-i18n="categoryName">Category name</label>
+                <input id="category-name" maxlength="100"
+                       placeholder="Food, Salary..."
+                       data-i18n-placeholder="categoryNamePlaceholder" required>
+
+                <label for="category-kind" data-i18n="categoryType">Category type</label>
                 <select id="category-kind" required>
-                    <option value="expense">Expense</option>
-                    <option value="income">Income</option>
+                    <option value="expense" data-i18n="expense">Expense</option>
+                    <option value="income" data-i18n="income">Income</option>
                 </select>
 
-                <label for="category-color">Color</label>
+                <label for="category-color" data-i18n="color">Color</label>
                 <input id="category-color" type="color" value="#4F46E5">
 
                 <div class="form-actions">
-                    <button class="btn primary" id="category-save" type="submit">Save category</button>
-                    <button class="btn secondary" id="category-cancel" type="button" hidden>Cancel</button>
+                    <button class="btn primary" id="category-save" type="submit"
+                            data-i18n="saveCategory">Save category</button>
+                    <button class="btn secondary" id="category-cancel"
+                            type="button" data-i18n="cancel" hidden>Cancel</button>
                 </div>
+
                 <div id="category-message" class="message" role="status"></div>
             </form>
         </div>
+
         <div class="panel">
-            <h2>Your categories</h2>
-            <div id="categories-list" class="empty">Loading categories...</div>
+            <h2 data-i18n="yourCategories">Your categories</h2>
+            <div id="categories-list" class="empty" data-i18n="loadingCategories">
+                Loading categories...
+            </div>
         </div>
     </section>
 </main>
 
+<script src="/static/js/i18n.js"></script>
 <script src="/static/js/manage.js"></script>
 </body>
 </html>

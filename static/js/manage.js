@@ -1,6 +1,7 @@
 
 const API = "/api";
 const $ = (id) => document.getElementById(id);
+const t = (key) => window.FinoraI18n?.t(key) ?? key;
 
 let accounts = [];
 let categories = [];
@@ -12,22 +13,20 @@ function getToken() {
 }
 
 async function apiRequest(path, options = {}) {
-    const headers = {
-        Authorization: `Bearer ${getToken()}`,
-        "Content-Type": "application/json",
-        ...options.headers
-    };
-
     const response = await fetch(`${API}${path}`, {
         ...options,
-        headers
+        headers: {
+            Authorization: `Bearer ${getToken()}`,
+            "Content-Type": "application/json",
+            ...options.headers
+        }
     });
 
     if (response.status === 401) {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         window.location.href = "/login/";
-        throw new Error("Session expired. Please sign in again.");
+        throw new Error(t("sessionExpired"));
     }
 
     const data = response.status === 204
@@ -35,18 +34,11 @@ async function apiRequest(path, options = {}) {
         : await response.json().catch(() => null);
 
     if (!response.ok) {
-        let message = `Request failed (${response.status}).`;
-
-        if (data && typeof data === "object") {
-            message = Object.entries(data)
-                .map(([key, value]) => {
-                    const text = typeof value === "string"
-                        ? value
-                        : JSON.stringify(value);
-                    return `${key}: ${text}`;
-                })
-                .join("\n");
-        }
+        const message = data && typeof data === "object"
+            ? Object.entries(data).map(([key, value]) =>
+                `${key}: ${Array.isArray(value) ? value.join(", ") : typeof value === "object" ? JSON.stringify(value) : value}`
+            ).join("\n")
+            : `${t("requestFailed")} (${response.status})`;
 
         throw new Error(message);
     }
@@ -92,8 +84,7 @@ function addItem(container, title, subtitle, editHandler, deleteHandler, color) 
     if (color) {
         const dot = document.createElement("span");
         dot.style.cssText =
-            `display:inline-block;width:10px;height:10px;border-radius:50%;` +
-            `background:${color};margin-right:9px;`;
+            `display:inline-block;width:10px;height:10px;border-radius:50%;background:${color};margin-right:9px;`;
         heading.prepend(dot);
     }
 
@@ -106,8 +97,8 @@ function addItem(container, title, subtitle, editHandler, deleteHandler, color) 
     const actions = document.createElement("div");
     actions.className = "item-actions";
     actions.append(
-        createButton("Edit", "secondary", editHandler),
-        createButton("Delete", "danger", deleteHandler)
+        createButton(t("edit"), "secondary", editHandler),
+        createButton(t("delete"), "danger", deleteHandler)
     );
 
     row.append(info, actions);
@@ -116,7 +107,7 @@ function addItem(container, title, subtitle, editHandler, deleteHandler, color) 
 
 async function loadAccounts() {
     const container = $("accounts-list");
-    container.textContent = "Loading accounts...";
+    container.textContent = t("loadingAccounts");
 
     try {
         const data = await apiRequest("/accounts/?page_size=100");
@@ -124,26 +115,26 @@ async function loadAccounts() {
         container.replaceChildren();
 
         if (!accounts.length) {
-            container.textContent = "No accounts yet. Add your first account.";
+            container.textContent = t("noAccountsYet");
             container.className = "empty";
             return;
         }
 
         container.className = "";
 
-        accounts.forEach((account) => {
-            const typeLabels = {
-                cash: "Cash",
-                card: "Bank card",
-                bank: "Bank account",
-                other: "Other"
-            };
+        const typeLabels = {
+            cash: "cash",
+            card: "bankCard",
+            bank: "bankAccount",
+            other: "other"
+        };
 
+        accounts.forEach((account) => {
             const subtitle = [
-                typeLabels[account.account_type] || account.account_type,
+                t(typeLabels[account.account_type] || "other"),
                 account.bank_name,
                 account.masked_card_number
-                    ? `Card •••• ${account.masked_card_number.slice(-4)}`
+                    ? `•••• ${account.masked_card_number.slice(-4)}`
                     : ""
             ].filter(Boolean).join(" · ");
 
@@ -157,14 +148,14 @@ async function loadAccounts() {
             );
         });
     } catch (error) {
-        container.textContent = "Could not load accounts.";
+        container.textContent = t("loadAccountsError");
         showMessage("account-message", error.message, true);
     }
 }
 
 async function loadCategories() {
     const container = $("categories-list");
-    container.textContent = "Loading categories...";
+    container.textContent = t("loadingCategories");
 
     try {
         const data = await apiRequest("/categories/?page_size=100");
@@ -172,7 +163,7 @@ async function loadCategories() {
         container.replaceChildren();
 
         if (!categories.length) {
-            container.textContent = "No categories yet. Add your first category.";
+            container.textContent = t("noCategoriesYet");
             container.className = "empty";
             return;
         }
@@ -180,21 +171,17 @@ async function loadCategories() {
         container.className = "";
 
         categories.forEach((category) => {
-            const typeLabel = category.kind === "income"
-                ? "Income"
-                : "Expense";
-
             addItem(
                 container,
                 category.name,
-                typeLabel,
+                t(category.kind === "income" ? "income" : "expense"),
                 () => editCategory(category),
                 () => deleteCategory(category.id),
                 category.color
             );
         });
     } catch (error) {
-        container.textContent = "Could not load categories.";
+        container.textContent = t("loadCategoriesError");
         showMessage("category-message", error.message, true);
     }
 }
@@ -203,25 +190,22 @@ function resetAccountForm() {
     editingAccountId = null;
     $("account-form").reset();
     $("account-color").value = "#0D9488";
-    $("account-form-title").textContent = "Add account";
-    $("account-save").textContent = "Save account";
+    $("account-form-title").textContent = t("addAccount");
+    $("account-save").textContent = t("saveAccount");
     $("account-cancel").hidden = true;
     clearMessage("account-message");
 }
 
 function editAccount(account) {
     editingAccountId = account.id;
-    $("account-form-title").textContent = "Edit account";
-    $("account-save").textContent = "Save changes";
+    $("account-form-title").textContent = t("editAccount");
+    $("account-save").textContent = t("saveChanges");
     $("account-cancel").hidden = false;
 
     $("account-name").value = account.name;
     $("account-type").value = account.account_type;
     $("bank-name").value = account.bank_name || "";
     $("account-color").value = account.color || "#0D9488";
-
-    // The API intentionally never returns the full card number.
-    // Keep this blank so a PATCH doesn't overwrite it accidentally.
     $("card-number").value = "";
 
     clearMessage("account-message");
@@ -241,7 +225,6 @@ async function saveAccount(event) {
 
     const cardNumber = $("card-number").value.trim();
 
-    // Only send this field when the user explicitly entered a value.
     if (cardNumber) {
         payload.card_number = cardNumber;
     } else if (editingAccountId === null) {
@@ -249,9 +232,7 @@ async function saveAccount(event) {
     }
 
     const editing = editingAccountId !== null;
-    const url = editing
-        ? `/accounts/${editingAccountId}/`
-        : "/accounts/";
+    const url = editing ? `/accounts/${editingAccountId}/` : "/accounts/";
 
     $("account-save").disabled = true;
 
@@ -263,7 +244,7 @@ async function saveAccount(event) {
 
         showMessage(
             "account-message",
-            editing ? "Account updated." : "Account created."
+            t(editing ? "accountUpdated" : "accountCreated")
         );
 
         resetAccountForm();
@@ -276,13 +257,11 @@ async function saveAccount(event) {
 }
 
 async function deleteAccount(id) {
-    if (!confirm("Delete this account? Accounts used by transactions cannot be deleted.")) {
-        return;
-    }
+    if (!confirm(t("deleteAccountConfirm"))) return;
 
     try {
         await apiRequest(`/accounts/${id}/`, { method: "DELETE" });
-        showMessage("account-message", "Account deleted.");
+        showMessage("account-message", t("accountDeleted"));
         await loadAccounts();
     } catch (error) {
         showMessage("account-message", error.message, true);
@@ -293,16 +272,16 @@ function resetCategoryForm() {
     editingCategoryId = null;
     $("category-form").reset();
     $("category-color").value = "#4F46E5";
-    $("category-form-title").textContent = "Add category";
-    $("category-save").textContent = "Save category";
+    $("category-form-title").textContent = t("addCategory");
+    $("category-save").textContent = t("saveCategory");
     $("category-cancel").hidden = true;
     clearMessage("category-message");
 }
 
 function editCategory(category) {
     editingCategoryId = category.id;
-    $("category-form-title").textContent = "Edit category";
-    $("category-save").textContent = "Save changes";
+    $("category-form-title").textContent = t("editCategory");
+    $("category-save").textContent = t("saveChanges");
     $("category-cancel").hidden = false;
 
     $("category-name").value = category.name;
@@ -324,9 +303,7 @@ async function saveCategory(event) {
     };
 
     const editing = editingCategoryId !== null;
-    const url = editing
-        ? `/categories/${editingCategoryId}/`
-        : "/categories/";
+    const url = editing ? `/categories/${editingCategoryId}/` : "/categories/";
 
     $("category-save").disabled = true;
 
@@ -338,7 +315,7 @@ async function saveCategory(event) {
 
         showMessage(
             "category-message",
-            editing ? "Category updated." : "Category created."
+            t(editing ? "categoryUpdated" : "categoryCreated")
         );
 
         resetCategoryForm();
@@ -351,13 +328,11 @@ async function saveCategory(event) {
 }
 
 async function deleteCategory(id) {
-    if (!confirm("Delete this category? Categories used by transactions cannot be deleted.")) {
-        return;
-    }
+    if (!confirm(t("deleteCategoryConfirm"))) return;
 
     try {
         await apiRequest(`/categories/${id}/`, { method: "DELETE" });
-        showMessage("category-message", "Category deleted.");
+        showMessage("category-message", t("categoryDeleted"));
         await loadCategories();
     } catch (error) {
         showMessage("category-message", error.message, true);
@@ -389,6 +364,8 @@ async function init() {
         return;
     }
 
+    await window.FinoraI18n?.init();
+
     $("account-form").addEventListener("submit", saveAccount);
     $("category-form").addEventListener("submit", saveCategory);
     $("account-cancel").addEventListener("click", resetAccountForm);
@@ -402,10 +379,7 @@ async function init() {
 
     setupTabs();
 
-    await Promise.all([
-        loadAccounts(),
-        loadCategories()
-    ]);
+    await Promise.all([loadAccounts(), loadCategories()]);
 }
 
 document.addEventListener("DOMContentLoaded", init);

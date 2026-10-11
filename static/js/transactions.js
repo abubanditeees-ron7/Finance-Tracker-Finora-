@@ -1,5 +1,9 @@
+
 const API = "/api";
 const token = () => localStorage.getItem("access_token");
+const t = (key) => window.FinoraI18n
+    ? window.FinoraI18n.t(key)
+    : key;
 
 let accounts = [];
 let categories = [];
@@ -19,7 +23,6 @@ async function apiRequest(path, options = {}) {
         ...options.headers
     };
 
-    console.log("API request:", path);
     const response = await fetch(`${API}${path}`, {
         ...options,
         headers
@@ -29,10 +32,9 @@ async function apiRequest(path, options = {}) {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         window.location.href = "/login/";
-        throw new Error("Session expired. Please sign in again.");
+        throw new Error(t("sessionExpired"));
     }
 
-    console.log("API response:", path, response.status);
     const data = response.status === 204
         ? null
         : await response.json().catch(() => null);
@@ -41,18 +43,22 @@ async function apiRequest(path, options = {}) {
         const message = data
             ? Object.entries(data)
                 .map(([key, value]) =>
-                    `${key}: ${Array.isArray(value) ? value.join(", ") : typeof value === "object" ? JSON.stringify(value) : value}`
+                    `${key}: ${
+                        Array.isArray(value)
+                            ? value.join(", ")
+                            : typeof value === "object"
+                                ? JSON.stringify(value)
+                                : value
+                    }`
                 )
                 .join("\n")
-            : `Request failed: ${response.status}`;
+            : `${t("requestFailed")}: ${response.status}`;
 
         throw new Error(message);
     }
 
     return data;
 }
-
-console.log("API data:");
 
 function listFrom(data) {
     if (Array.isArray(data)) return data;
@@ -65,9 +71,11 @@ function setMessage(element, text, isError = false) {
 }
 
 function formatMoney(value) {
-    return `${Number(value).toLocaleString("en-US", {
-        maximumFractionDigits: 2
-    })} UZS`;
+    return `${Number(value).toLocaleString(
+        window.FinoraI18n?.getLanguage() === "ru" ? "ru-RU" :
+        window.FinoraI18n?.getLanguage() === "uz" ? "uz-UZ" : "en-US",
+        { maximumFractionDigits: 2 }
+    )} UZS`;
 }
 
 function today() {
@@ -97,17 +105,22 @@ function fillSelect(select, items, placeholder, getLabel) {
 function updateCategories() {
     const kind = $("kind").value;
     const currentValue = $("category").value;
-
-    const filtered = categories.filter((category) => category.kind === kind);
+    const filtered = categories.filter(
+        (category) => category.kind === kind
+    );
 
     fillSelect(
         $("category"),
         filtered,
-        filtered.length ? "Choose a category" : "No categories for this type",
+        filtered.length
+            ? t("chooseCategory")
+            : t("noCategoriesForType"),
         (category) => category.name
     );
 
-    if (filtered.some((category) => String(category.id) === currentValue)) {
+    if (filtered.some(
+        (category) => String(category.id) === currentValue
+    )) {
         $("category").value = currentValue;
     }
 }
@@ -124,16 +137,21 @@ async function loadAccountsAndCategories() {
             $("account"),
             accounts,
             accounts.length
-                ? "Choose an account"
-                : "No accounts yet — create one first",
+                ? t("chooseAccount")
+                : t("noAccounts"),
             (account) => account.name
         );
     } catch (error) {
-        $("account").innerHTML =
-            '<option value="">Could not load accounts</option>';
+        fillSelect(
+            $("account"),
+            [],
+            t("loadAccountsError"),
+            (account) => account.name
+        );
+
         setMessage(
             $("form-message"),
-            "Accounts: " + error.message,
+            `${t("accountsError")}: ${error.message}`,
             true
         );
         console.error("Accounts API error:", error);
@@ -145,21 +163,29 @@ async function loadAccountsAndCategories() {
         updateCategories();
 
         if (!categories.length) {
-            $("category").innerHTML =
-                '<option value="">No categories yet — create one first</option>';
+            fillSelect(
+                $("category"),
+                [],
+                t("noCategories"),
+                (category) => category.name
+            );
         }
     } catch (error) {
-        $("category").innerHTML =
-            '<option value="">Could not load categories</option>';
+        fillSelect(
+            $("category"),
+            [],
+            t("loadCategoriesError"),
+            (category) => category.name
+        );
+
         setMessage(
             $("form-message"),
-            "Categories: " + error.message,
+            `${t("categoriesError")}: ${error.message}`,
             true
         );
         console.error("Categories API error:", error);
     }
 }
-
 
 function renderTransactions() {
     const body = $("transactions-body");
@@ -171,17 +197,18 @@ function renderTransactions() {
     );
 
     $("list-summary").textContent =
-        `${visible.length} transaction(s) on this page`;
+        `${visible.length} ${t("transactionCount")}`;
 
     if (!visible.length) {
         const row = document.createElement("tr");
         const cell = document.createElement("td");
         cell.colSpan = 5;
         cell.className = "empty";
-        cell.textContent = "No transactions found on this page.";
+        cell.textContent = t("noTransactionsFound");
         row.append(cell);
         body.append(row);
     }
+
     visible.forEach((item) => {
         const row = document.createElement("tr");
 
@@ -189,12 +216,15 @@ function renderTransactions() {
         dateCell.textContent = item.date || "—";
 
         const kindCell = document.createElement("td");
-        kindCell.textContent = item.kind === "income" ? "Income" : "Expense";
+        kindCell.textContent = t(
+            item.kind === "income" ? "income" : "expense"
+        );
 
         const amountCell = document.createElement("td");
         amountCell.textContent =
             `${item.kind === "expense" ? "-" : "+"}${formatMoney(item.amount)}`;
-        amountCell.className = item.kind === "income" ? "income" : "expense";
+        amountCell.className =
+            item.kind === "income" ? "income" : "expense";
 
         const commentCell = document.createElement("td");
         commentCell.textContent = item.comment || "—";
@@ -205,29 +235,41 @@ function renderTransactions() {
 
         const editButton = document.createElement("button");
         editButton.className = "secondary small-btn";
-        editButton.textContent = "Edit";
+        editButton.textContent = t("edit");
         editButton.addEventListener("click", () => startEdit(item));
 
         const deleteButton = document.createElement("button");
         deleteButton.className = "danger small-btn";
-        deleteButton.textContent = "Delete";
-        deleteButton.addEventListener("click", () => deleteTransaction(item.id));
+        deleteButton.textContent = t("delete");
+        deleteButton.addEventListener(
+            "click",
+            () => deleteTransaction(item.id)
+        );
 
         actions.append(editButton, deleteButton);
         actionsCell.append(actions);
-        row.append(dateCell, kindCell, amountCell, commentCell, actionsCell);
+        row.append(
+            dateCell,
+            kindCell,
+            amountCell,
+            commentCell,
+            actionsCell
+        );
         body.append(row);
     });
 
-    $("page-label").textContent = `Page ${currentPage} of ${totalPages}`;
+    $("page-label").textContent =
+        `${t("page")} ${currentPage} ${t("of")} ${totalPages}`;
+
     $("previous-button").disabled = currentPage <= 1;
     $("next-button").disabled = currentPage >= totalPages;
 }
 
 async function loadTransactions() {
     $("list-message").textContent = "";
+
     $("transactions-body").innerHTML =
-        '<tr><td colspan="5" class="empty">Loading...</td></tr>';
+        `<tr><td colspan="5" class="empty">${t("loading")}</td></tr>`;
 
     try {
         const data = await apiRequest(
@@ -244,26 +286,26 @@ async function loadTransactions() {
 
         renderTransactions();
     } catch (error) {
-    $("transactions-body").replaceChildren();
+        $("transactions-body").replaceChildren();
 
-    const row = document.createElement("tr");
-    const cell = document.createElement("td");
-    cell.colSpan = 5;
-    cell.className = "empty";
-    cell.textContent = "API error: " + error.message;
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 5;
+        cell.className = "empty";
+        cell.textContent = `${t("apiError")}: ${error.message}`;
 
-    row.append(cell);
-    $("transactions-body").append(row);
+        row.append(cell);
+        $("transactions-body").append(row);
 
-    setMessage($("list-message"), error.message, true);
-    console.error("Transactions error:", error);
+        setMessage($("list-message"), error.message, true);
+        console.error("Transactions error:", error);
     }
 }
 
 function startEdit(item) {
     editingId = item.id;
-    $("form-title").textContent = "Edit transaction";
-    $("save-button").textContent = "Save changes";
+    $("form-title").textContent = t("editTransaction");
+    $("save-button").textContent = t("saveChanges");
     $("cancel-button").hidden = false;
 
     $("kind").value = item.kind;
@@ -283,8 +325,8 @@ function resetForm() {
     editingId = null;
     $("transaction-form").reset();
     $("date").value = today();
-    $("form-title").textContent = "Add transaction";
-    $("save-button").textContent = "Save transaction";
+    $("form-title").textContent = t("addTransaction");
+    $("save-button").textContent = t("saveTransaction");
     $("cancel-button").hidden = true;
     $("form-message").textContent = "";
     updateCategories();
@@ -292,21 +334,11 @@ function resetForm() {
 
 async function saveTransaction(event) {
     event.preventDefault();
-    console.log("Save transaction clicked");
-
-    console.log("Form data:", {
-        kind: $("kind").value,
-        amount: $("amount").value,
-        date: $("date").value,
-        account: $("account").value,
-        category: $("category").value,
-        comment: $("comment").value
-    });
 
     if (!$("account").value || !$("category").value) {
         setMessage(
             $("form-message"),
-            "Create an account and a matching category first.",
+            t("createAccountCategoryFirst"),
             true
         );
         return;
@@ -324,21 +356,21 @@ async function saveTransaction(event) {
     $("save-button").disabled = true;
     $("form-message").textContent = "";
 
-    console.log("Sending transaction to API...");
     try {
         if (editingId !== null) {
             await apiRequest(`/transactions/${editingId}/`, {
                 method: "PATCH",
                 body: JSON.stringify(payload)
             });
-            console.log("Transaction created successfully");
-            setMessage($("form-message"), "Transaction updated successfully.");
+
+            setMessage($("form-message"), t("transactionUpdated"));
         } else {
             await apiRequest("/transactions/", {
                 method: "POST",
                 body: JSON.stringify(payload)
             });
-            setMessage($("form-message"), "Transaction created successfully.");
+
+            setMessage($("form-message"), t("transactionCreated"));
         }
 
         resetForm();
@@ -351,18 +383,20 @@ async function saveTransaction(event) {
 }
 
 async function deleteTransaction(id) {
-    if (!window.confirm("Delete this transaction? This action cannot be undone.")) {
+    if (!window.confirm(t("deleteConfirm"))) {
         return;
     }
 
     try {
-        await apiRequest(`/transactions/${id}/`, { method: "DELETE" });
+        await apiRequest(`/transactions/${id}/`, {
+            method: "DELETE"
+        });
 
         if (transactions.length === 1 && currentPage > 1) {
             currentPage -= 1;
         }
 
-        setMessage($("list-message"), "Transaction deleted.");
+        setMessage($("list-message"), t("transactionDeleted"));
         await loadTransactions();
     } catch (error) {
         setMessage($("list-message"), error.message, true);
@@ -374,6 +408,8 @@ async function init() {
         window.location.href = "/login/";
         return;
     }
+
+    await window.FinoraI18n?.init();
 
     $("date").value = today();
 
