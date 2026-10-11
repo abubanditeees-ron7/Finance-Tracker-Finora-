@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions — Finora</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #182230;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 20px 6%;
+            background: white;
+            border-bottom: 1px solid #e7ebf0;
+        }
+        .logo {
+            color: #2563eb;
+            font-size: 25px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+        nav { display: flex; gap: 10px; align-items: center; }
+        a { text-decoration: none; }
+        .nav-link, .primary, .secondary, .danger {
+            display: inline-block;
+            border: 0;
+            border-radius: 9px;
+            padding: 11px 15px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .nav-link, .secondary { color: #344054; background: #eef2f7; }
+        .primary { color: white; background: #2563eb; }
+        .danger { color: #b42318; background: #fee4e2; }
+        main { max-width: 1200px; margin: 35px auto; padding: 0 22px; }
+        .heading { margin-bottom: 25px; }
+        .heading h1 { margin: 0 0 9px; font-size: 30px; }
+        .muted { color: #667085; }
+        .layout {
+            display: grid;
+            grid-template-columns: 340px minmax(0, 1fr);
+            gap: 22px;
+            align-items: start;
+        }
+        .panel {
+            padding: 24px;
+            background: white;
+            border: 1px solid #e7ebf0;
+            border-radius: 16px;
+            box-shadow: 0 5px 18px #18223008;
+            min-width: 0;
+        }
+        .panel h2 { margin: 0 0 20px; font-size: 19px; }
+        label {
+            display: block;
+            margin: 15px 0 7px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #344054;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #d0d5dd;
+            border-radius: 9px;
+            font: inherit;
+            color: #182230;
+            background: white;
+        }
+        textarea { min-height: 85px; resize: vertical; }
+        input:focus, select:focus, textarea:focus {
+            outline: 2px solid #bfdbfe;
+            border-color: #2563eb;
+        }
+        .form-actions { display: flex; gap: 9px; margin-top: 20px; flex-wrap: wrap; }
+        .message { margin-top: 14px; font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+        .success { color: #15803d; }
+        .error { color: #b42318; }
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+        .toolbar select { width: auto; min-width: 150px; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 620px; }
+        th, td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #eef0f4;
+            text-align: left;
+            font-size: 14px;
+        }
+        th { color: #667085; font-size: 12px; text-transform: uppercase; }
+        .income { color: #15803d; font-weight: 700; }
+        .expense { color: #dc2626; font-weight: 700; }
+        .actions { display: flex; gap: 7px; }
+        .small-btn { padding: 8px 10px; font-size: 12px; }
+        .empty { padding: 30px 12px; text-align: center; color: #667085; }
+        .pagination {
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 12px; margin-top: 18px; flex-wrap: wrap;
+        }
+        @media (max-width: 900px) {
+            .layout { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <a class="logo" href="/">Finora.</a>
+    <nav>
+        <a class="nav-link" href="/dashboard/">Dashboard</a>
+        <button class="secondary" id="logout-button">Sign out</button>
+    </nav>
+</header>
+
+<main>
+    <section class="heading">
+        <h1>Transactions</h1>
+        <p class="muted">Manage your income and expenses in one place.</p>
+    </section>
+
+    <div class="layout">
+        <section class="panel">
+            <h2 id="form-title">Add transaction</h2>
+
+            <form id="transaction-form">
+                <label for="kind">Transaction type</label>
+                <select id="kind" required>
+                    <option value="expense">Expense</option>
+                    <option value="income">Income</option>
+                </select>
+
+                <label for="amount">Amount (UZS)</label>
+                <input id="amount" type="number" min="0.01"
+                       step="0.01" placeholder="150000" required>
+
+                <label for="date">Date</label>
+                <input id="date" type="date" required>
+
+                <label for="account">Account</label>
+                <select id="account" required>
+                    <option value="">Loading accounts...</option>
+                </select>
+
+                <label for="category">Category</label>
+                <select id="category" required>
+                    <option value="">Choose a category</option>
+                </select>
+
+                <label for="comment">Comment (optional)</label>
+                <textarea id="comment" maxlength="5000"
+                          placeholder="What was this transaction for?"></textarea>
+
+                <div class="form-actions">
+                    <button class="primary" type="submit" id="save-button">
+                        Save transaction
+                    </button>
+                    <button class="secondary" type="button" id="cancel-button"
+                            hidden>Cancel edit</button>
+                </div>
+                <div id="form-message" class="message" role="status"></div>
+            </form>
+        </section>
+
+        <section class="panel">
+            <div class="toolbar">
+                <div>
+                    <h2 style="margin-bottom:6px;">Your transactions</h2>
+                    <span class="muted" id="list-summary">Loading...</span>
+                </div>
+                <select id="filter-kind" aria-label="Filter transactions">
+                    <option value="">All types</option>
+                    <option value="income">Income only</option>
+                    <option value="expense">Expenses only</option>
+                </select>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Comment</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-body">
+                        <tr><td colspan="5" class="empty">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <button class="secondary" id="previous-button" disabled>Previous</button>
+                <span class="muted" id="page-label">Page 1</span>
+                <button class="secondary" id="next-button" disabled>Next</button>
+            </div>
+            <div id="list-message" class="message" role="status"></div>
+        </section>
+    </div>
+</main>
+
+<script src="/static/js/transactions.js"></script>
+</body>
+</html>

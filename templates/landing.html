@@ -245,9 +245,9 @@
             <button class="btn btn-primary" id="logout-button">Sign out</button>
         `;
 
-        heroActions.innerHTML = 
+        heroActions.innerHTML = `
             <a class="btn btn-primary" href="/dashboard/">Open my dashboard</a>
-        ;
+        `;
 
         document.getElementById("logout-button").addEventListener("click", () => {
             localStorage.removeItem("access_token");

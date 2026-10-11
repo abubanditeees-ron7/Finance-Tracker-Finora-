@@ -202,11 +202,16 @@
 
     if (token) {
         navigation.innerHTML = `
+            <a href="/transactions/"
+                style="padding:10px 14px;background:#eef2f7;
+        color:#344054;border-radius:8px;text-decoration:none;">
+                Transactions
+            </a>
             <span style="color:#667085;">Signed in</span>
             <button id="logout-button"
-                style="padding:10px 14px;border:0;border-radius:8px;
-                       background:#e7ebf0;cursor:pointer;">
-                Sign out
+                    style="padding:10px 14px;border:0;border-radius:8px;
+        background:#e7ebf0;cursor:pointer;">
+                    Sign out
             </button>
         `;
 
@@ -216,6 +221,7 @@
             window.location.href = "/";
         });
     }
-</script>
+</script>   
+<script src="/static/js/dashboard.js"></script>
 </body>
 </html>
