@@ -19,3 +19,7 @@ def manage_page(request):
 
 def reports_page(request):
     return render(request, "reports.html")
+
+
+def settings_page(request):
+    return render(request, "settings.html")

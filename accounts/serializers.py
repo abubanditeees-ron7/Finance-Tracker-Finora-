@@ -3,6 +3,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.mail import send_mail
 from django.db import transaction
+
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -171,3 +172,28 @@ class EmailOrUsernameTokenSerializer(TokenObtainPairSerializer):
             "password": password,
         })
         return data
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        source="user.username",
+        read_only=True,
+    )
+    email = serializers.EmailField(
+        source="user.email",
+        read_only=True,
+    )
+
+    class Meta:
+        model = UserProfile
+        fields = [
+            "username",
+            "email",
+            "language",
+            "email_verified",
+        ]
+        read_only_fields = [
+            "username",
+            "email",
+            "email_verified",
+        ]
