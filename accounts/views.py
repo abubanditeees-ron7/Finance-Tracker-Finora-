@@ -13,6 +13,7 @@ from .serializers import (
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
+    serializer_class = RegisterSerializer
 
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -34,6 +35,7 @@ class RegisterView(APIView):
 
 class VerifyEmailView(APIView):
     permission_classes = [AllowAny]
+    serializer_class = VerifyEmailSerializer
 
     def post(self, request):
         serializer = VerifyEmailSerializer(data=request.data)

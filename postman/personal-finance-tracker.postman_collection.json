@@ -1,0 +1,238 @@
+{
+  "info": {
+    "name": "Personal Finance Tracker API",
+    "description": "Authentication, categories, accounts, transactions and reports.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000"
+    },
+    {
+      "key": "access",
+      "value": ""
+    },
+    {
+      "key": "refresh",
+      "value": ""
+    },
+    {
+      "key": "categoryId",
+      "value": "1"
+    },
+    {
+      "key": "accountId",
+      "value": "1"
+    },
+    {
+      "key": "transactionId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"postman_test\",\n  \"email\": \"postman_test@example.com\",\n  \"password\": \"StrongPass123!Example\",\n  \"password_confirm\": \"StrongPass123!Example\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/register/"
+      }
+    },
+    {
+      "name": "Verify Email",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"postman_test@example.com\",\n  \"code\": \"REPLACE_WITH_EMAIL_CODE\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/verify-email/"
+      }
+    },
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "  const data = pm.response.json();",
+              "  pm.collectionVariables.set('access', data.access);",
+              "  pm.collectionVariables.set('refresh', data.refresh);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"postman_test\",\n  \"password\": \"StrongPass123!Example\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/login/"
+      }
+    },
+    {
+      "name": "Refresh Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "  pm.collectionVariables.set('access', pm.response.json().access);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refresh\": \"{{refresh}}\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/token/refresh/"
+      }
+    },
+    {
+      "name": "List Categories",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/categories/"
+      }
+    },
+    {
+      "name": "Create Category",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Food\",\n  \"kind\": \"expense\",\n  \"color\": \"#F97316\"\n}"
+        },
+        "url": "{{baseUrl}}/api/categories/"
+      }
+    },
+    {
+      "name": "List Accounts",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/accounts/"
+      }
+    },
+    {
+      "name": "List Transactions",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/transactions/?page=1&page_size=10"
+      }
+    },
+    {
+      "name": "Create Transaction",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"account\": {{accountId}},\n  \"category\": {{categoryId}},\n  \"kind\": \"expense\",\n  \"amount\": \"25000.00\",\n  \"date\": \"2026-10-11\",\n  \"comment\": \"Lunch\"\n}"
+        },
+        "url": "{{baseUrl}}/api/transactions/"
+      }
+    },
+    {
+      "name": "Monthly Report",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/reports/?period=month"
+      }
+    },
+    {
+      "name": "Custom Report",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/reports/?period=custom&date_from=2026-10-01&date_to=2026-10-11"
+      }
+    }
+  ]
+}

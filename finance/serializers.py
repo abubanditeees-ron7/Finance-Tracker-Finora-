@@ -2,6 +2,8 @@ from rest_framework import serializers
 
 from .models import Category, FinancialAccount, Transaction
 
+from drf_spectacular.utils import extend_schema_field
+
 
 class CategorySerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -75,6 +77,7 @@ class FinancialAccountSerializer(serializers.ModelSerializer):
             "card_number": {"write_only": True},
         }
 
+    @extend_schema_field(serializers.CharField())
     def get_masked_card_number(self, obj):
         number = obj.card_number
         if not number:

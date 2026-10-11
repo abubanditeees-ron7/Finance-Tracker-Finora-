@@ -1,5 +1,6 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -16,6 +17,8 @@ from .serializers import (
 )
 from .report_serializers import FinanceReportSerializer
 from .report_services import build_finance_report
+
+from drf_spectacular.utils import extend_schema_view, extend_schema
 
 
 class OwnedListCreateView(GenericAPIView):
@@ -119,6 +122,9 @@ class CategoryListCreateView(OwnedListCreateView):
     serializer_class = CategorySerializer
 
 
+@extend_schema_view(
+    get=extend_schema(operation_id="category_detail"),
+)
 class CategoryDetailView(OwnedDetailView):
     model = Category
     serializer_class = CategorySerializer
@@ -129,6 +135,9 @@ class AccountListCreateView(OwnedListCreateView):
     serializer_class = FinancialAccountSerializer
 
 
+@extend_schema_view(
+    get=extend_schema(operation_id="account_detail"),
+)
 class AccountDetailView(OwnedDetailView):
     model = FinancialAccount
     serializer_class = FinancialAccountSerializer
@@ -140,6 +149,9 @@ class TransactionListCreateView(OwnedListCreateView):
     parser_classes = [JSONParser, FormParser, MultiPartParser]
 
 
+@extend_schema_view(
+    get=extend_schema(operation_id="transaction_detail"),
+)
 class TransactionDetailView(OwnedDetailView):
     model = Transaction
     serializer_class = TransactionSerializer
@@ -147,6 +159,7 @@ class TransactionDetailView(OwnedDetailView):
 
 class FinanceReportView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = FinanceReportSerializer
 
     def get(self, request):
         period = request.query_params.get("period", "month")
