@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Reports — Finora</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f7fb; color: #182230; }
+        header { display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; padding:20px 6%; background:white; border-bottom:1px solid #e7ebf0; }
+        .logo { font-size:25px; font-weight:800; color:#2563eb; text-decoration:none; }
+        nav { display:flex; gap:10px; flex-wrap:wrap; }
+        a { text-decoration:none; }
+        .btn { display:inline-block; border:0; border-radius:9px; padding:11px 15px; font-weight:600; font-size:14px; cursor:pointer; }
+        .secondary { background:#eef2f7; color:#344054; }
+        .primary { background:#2563eb; color:white; }
+        main { max-width:1100px; margin:35px auto; padding:0 20px; }
+        .muted { color:#667085; }
+        .panel { background:white; border:1px solid #e7ebf0; border-radius:16px; padding:24px; margin-top:22px; min-width:0; }
+        .filters { display:flex; gap:14px; align-items:end; flex-wrap:wrap; }
+        .field { flex:1; min-width:160px; }
+        label { display:block; margin-bottom:7px; font-size:13px; font-weight:700; }
+        select, input { width:100%; padding:11px; border:1px solid #d0d5dd; border-radius:9px; background:white; font:inherit; }
+        .date-fields { display:flex; gap:12px; flex:2; min-width:280px; }
+        .date-fields[hidden] { display:none; }
+        .cards { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:22px; }
+        .metric { background:white; border:1px solid #e7ebf0; border-radius:14px; padding:22px; min-width:0; }
+        .metric p { color:#667085; margin:0 0 12px; }
+        .amount { font-size:clamp(19px,2.5vw,27px); font-weight:800; overflow-wrap:anywhere; }
+        .balance { background:#1d4ed8; color:white; }
+        .balance p { color:#dbeafe; }
+        .columns { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
+        .category-row { margin:18px 0; }
+        .category-heading { display:flex; justify-content:space-between; gap:12px; font-size:14px; margin-bottom:8px; }
+        .category-name { overflow-wrap:anywhere; }
+        .bar { height:9px; background:#edf0f5; border-radius:99px; overflow:hidden; }
+        .bar-fill { height:100%; border-radius:99px; }
+        .empty { padding:20px 0; color:#667085; text-align:center; }
+        .message { margin-top:15px; white-space:pre-wrap; overflow-wrap:anywhere; }
+        .error { color:#b42318; }
+        .success { color:#15803d; }
+        @media(max-width:720px) {
+            .cards { grid-template-columns:1fr; }
+            .columns { grid-template-columns:1fr; }
+            .date-fields { flex-direction:column; min-width:100%; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <a class="logo" href="/">Finora.</a>
+    <nav>
+        <a class="btn secondary" href="/dashboard/">Dashboard</a>
+        <a class="btn secondary" href="/transactions/">Transactions</a>
+        <a class="btn secondary" href="/manage/">Accounts & Categories</a>
+        <button class="btn primary" id="logout-button">Sign out</button>
+    </nav>
+</header>
+
+<main>
+    <h1>Financial reports</h1>
+    <p class="muted">Understand your income, expenses and spending habits.</p>
+
+    <section class="panel">
+        <form id="report-form" class="filters">
+            <div class="field">
+                <label for="period">Reporting period</label>
+                <select id="period">
+                    <option value="day">Today</option>
+                    <option value="week">This week</option>
+                    <option value="month" selected>This month</option>
+                    <option value="year">This year</option>
+                    <option value="custom">Custom dates</option>
+                </select>
+            </div>
+
+            <div class="date-fields" id="date-fields" hidden>
+                <div class="field">
+                    <label for="date-from">From</label>
+                    <input type="date" id="date-from">
+                </div>
+                <div class="field">
+                    <label for="date-to">To</label>
+                    <input type="date" id="date-to">
+                </div>
+            </div>
+
+            <button class="btn primary" id="report-submit" type="submit">
+                Generate report
+            </button>
+        </form>
+        <div id="report-message" class="message" role="status"></div>
+    </section>
+
+    <section class="cards">
+        <article class="metric balance">
+            <p>Net balance for period</p>
+            <div class="amount" id="report-balance">—</div>
+        </article>
+        <article class="metric">
+            <p>Total income</p>
+            <div class="amount" id="report-income">—</div>
+        </article>
+        <article class="metric">
+            <p>Total expenses</p>
+            <div class="amount" id="report-expense">—</div>
+        </article>
+    </section>
+
+    <section class="panel">
+        <h2 id="report-period-title">Report period</h2>
+        <p class="muted" id="report-dates">Select a period to begin.</p>
+    </section>
+
+    <section class="columns">
+        <article class="panel">
+            <h2>Income by category</h2>
+            <div id="income-categories" class="empty">No report loaded yet.</div>
+        </article>
+        <article class="panel">
+            <h2>Expenses by category</h2>
+            <div id="expense-categories" class="empty">No report loaded yet.</div>
+        </article>
+    </section>
+</main>
+
+<script src="/static/js/reports.js"></script>
+</body>
+</html>

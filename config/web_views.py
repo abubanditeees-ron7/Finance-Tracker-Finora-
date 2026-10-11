@@ -15,3 +15,7 @@ def transactions_page(request):
 
 def manage_page(request):
     return render(request, "manage.html")
+
+
+def reports_page(request):
+    return render(request, "reports.html")

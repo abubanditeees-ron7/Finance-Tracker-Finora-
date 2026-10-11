@@ -22,7 +22,13 @@ from drf_spectacular.views import (
     SpectacularRedocView,
 )
 
-from config.web_views import landing_page, dashboard, transactions_page, manage_page
+from config.web_views import (
+    landing_page,
+    dashboard,
+    transactions_page,
+    manage_page,
+    reports_page,
+)
 from accounts.web_views import login_page, register_page
 
 
@@ -33,6 +39,7 @@ urlpatterns = [
     path("register/", register_page, name="register-page"),
     path("transactions/", transactions_page, name="transactions-page"),
     path("manage/", manage_page, name="manage"),
+    path("reports/", reports_page, name="reports"),
     path("admin/", admin.site.urls),
     path("api/auth/", include("accounts.urls")),
     path("api/", include("finance.urls")),
