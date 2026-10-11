@@ -11,3 +11,7 @@ def dashboard(request):
 
 def transactions_page(request):
     return render(request, "transactions.html")
+
+
+def manage_page(request):
+    return render(request, "manage.html")
