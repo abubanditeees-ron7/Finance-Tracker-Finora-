@@ -118,6 +118,38 @@
             text-decoration: none;
         }
 
+        .logout-button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .logout-button:hover {
+            background: #1d4ed8;
+        }
+
+        .logout-button:focus-visible {
+            outline: 3px solid #93c5fd;
+            outline-offset: 2px;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+        }
+
         @media (max-width: 700px) {
             .cards {
                 grid-template-columns: 1fr;
@@ -157,7 +189,12 @@
 
         <span class="muted" data-i18n="signedIn">Signed in</span>
 
-        <button class="secondary" id="logout-button" data-i18n="signOut">
+        <button
+            class="logout-button"
+            id="logout-button"
+            type="button"
+            data-i18n="signOut"
+        >
             Sign out
         </button>
     </nav>
@@ -197,11 +234,17 @@
                 Your latest income and expenses
             </p>
         </div>
-        <p data-i18n="manageApi" href="/api/docs/" class="api-link"
-           style="margin-top:0;">Manage via API</p>
+        <a
+            data-i18n="manageApi"
+            href="/api/docs/"
+            class="api-link"
+            style="margin-top:0;"
+        >
+            Manage via API
+        </a>
     </div>
 
-    <div id="transactions-list" class="empty" data-i18n="LoadingTransactions">
+    <div id="transactions-list" class="empty" data-i18n="loadingTransactions">
         Loading transactions...
     </div>
 </section>
@@ -212,43 +255,6 @@
             <a class="api-link" data-i18n="openSwagger" href="/api/docs/">Open Swagger</a>
         </section>
     </main>
-    <script>
-    const token = localStorage.getItem("access_token");
-    const navigation = document.getElementById("auth-navigation");
-
-    if (token) {
-        navigation.innerHTML = `
-            <a href="/transactions/"
-                style="padding:10px 14px;background:#eef2f7;
-        color:#344054;border-radius:8px;text-decoration:none;">
-                Transactions
-            </a>
-            <a href="/reports/"
-                style="padding:10px 14px;background:#eef2f7;
-                    color:#344054;border-radius:8px;text-decoration:none;">
-                Financial reports
-            </a>
-            <a href="/manage/"
-                style="padding:10px 14px;background:#eef2f7;
-                    color:#344054;border-radius:8px;text-decoration:none;">
-                Accounts & Categories
-            </a>
-            <a href="/settings/">Settings</a>
-            <span style="color:#667085;">Signed in</span>
-            <button id="logout-button"
-                    style="padding:10px 14px;border:0;border-radius:8px;
-        background:#e7ebf0;cursor:pointer;">
-                    Sign out
-            </button>
-        `;
-
-        document.getElementById("logout-button").addEventListener("click", () => {
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("refresh_token");
-            window.location.href = "/";
-        });
-    }
-</script>  
 <script src="/static/js/i18n.js"></script> 
 <script src="/static/js/dashboard.js"></script>
 </body>

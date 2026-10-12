@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -23,6 +24,7 @@
             justify-content: space-between;
             align-items: center;
             gap: 20px;
+            flex-wrap: wrap;
         }
 
         .logo {
@@ -32,7 +34,12 @@
             color: #245bea;
         }
 
-        nav { display: flex; align-items: center; gap: 12px; }
+        nav, .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
 
         a { text-decoration: none; }
 
@@ -56,6 +63,15 @@
             color: #24334b;
             background: white;
             border: 1px solid #e1e7f0;
+        }
+
+        .language-select {
+            padding: 10px;
+            border: 1px solid #e1e7f0;
+            border-radius: 9px;
+            background: white;
+            color: #24334b;
+            font-size: 14px;
         }
 
         .hero {
@@ -165,7 +181,12 @@
         }
 
         @media (max-width: 760px) {
-            .hero { grid-template-columns: 1fr; padding-top: 50px; gap: 45px; }
+            .hero {
+                grid-template-columns: 1fr;
+                padding-top: 50px;
+                gap: 45px;
+            }
+
             h1 { letter-spacing: -1.5px; }
             .features { grid-template-columns: 1fr; }
             header { padding: 20px; }
@@ -175,39 +196,56 @@
 <body>
 <header>
     <a class="logo" href="/">Finora.</a>
-    <nav id="navigation">
-        <a class="btn btn-light" href="/login/">Sign in</a>
-        <a class="btn btn-primary" href="/register/">Sign up</a>
-    </nav>
+
+    <div class="header-actions">
+        <label for="language-select" data-public-i18n="language">Language</label>
+        <select id="language-select" class="language-select" aria-label="Language">
+            <option value="en">English</option>
+            <option value="ru">Русский</option>
+            <option value="uz">O‘zbekcha</option>
+        </select>
+
+        <nav id="navigation"></nav>
+    </div>
 </header>
 
 <main>
     <section class="hero">
         <div>
-            <div class="eyebrow">YOUR MONEY. YOUR CONTROL.</div>
-            <h1>Make your money work <span>for you.</span></h1>
-            <p class="description">
-                Take control of your personal finances. Track income,
-                manage expenses, organize transactions and understand
-                where your money goes — all in one place.
-            </p>
-            <div class="hero-actions" id="hero-actions">
-                <a class="btn btn-primary" href="/register/">Get started — it's free</a>
-                <a class="btn btn-light" href="/login/">I have an account</a>
+            <div class="eyebrow" data-public-i18n="eyebrow">
+                YOUR MONEY. YOUR CONTROL.
             </div>
+
+            <h1>
+                <span data-public-i18n="titleStart">Make your money work</span>
+                <span data-public-i18n="titleEnd">for you.</span>
+            </h1>
+
+            <p class="description" data-public-i18n="description">
+                Take control of your personal finances.
+            </p>
+
+            <div class="hero-actions" id="hero-actions"></div>
         </div>
 
         <div class="preview">
-            <div class="preview-label">Your finances at a glance</div>
-            <div class="preview-balance">Your money,<br>clearly organized.</div>
+            <div class="preview-label" data-public-i18n="previewLabel">
+                Your finances at a glance
+            </div>
+
+            <div class="preview-balance" data-public-i18n="previewBalance">
+                Your money, clearly organized.
+            </div>
+
             <div class="preview-stats">
                 <div class="stat">
-                    <small>Income</small>
-                    <strong>Track it</strong>
+                    <small data-public-i18n="income">Income</small>
+                    <strong data-public-i18n="trackIt">Track it</strong>
                 </div>
+
                 <div class="stat">
-                    <small>Expenses</small>
-                    <strong>Understand it</strong>
+                    <small data-public-i18n="expenses">Expenses</small>
+                    <strong data-public-i18n="understandIt">Understand it</strong>
                 </div>
             </div>
         </div>
@@ -216,45 +254,35 @@
     <section class="features">
         <article class="feature">
             <div class="feature-icon">📊</div>
-            <h3>Know your numbers</h3>
-            <p>See your income, expenses and balance in one personal dashboard.</p>
+            <h3 data-public-i18n="featureOneTitle">Know your numbers</h3>
+            <p data-public-i18n="featureOneText">
+                See your income, expenses and balance in one personal dashboard.
+            </p>
         </article>
+
         <article class="feature">
             <div class="feature-icon">🧾</div>
-            <h3>Track every transaction</h3>
-            <p>Organize financial activity and add categories, notes and details.</p>
+            <h3 data-public-i18n="featureTwoTitle">Track every transaction</h3>
+            <p data-public-i18n="featureTwoText">
+                Organize financial activity and add categories, notes and details.
+            </p>
         </article>
+
         <article class="feature">
             <div class="feature-icon">🎯</div>
-            <h3>Build better habits</h3>
-            <p>Use financial reports to understand your spending and plan ahead.</p>
+            <h3 data-public-i18n="featureThreeTitle">Build better habits</h3>
+            <p data-public-i18n="featureThreeText">
+                Use financial reports to understand your spending and plan ahead.
+            </p>
         </article>
     </section>
 </main>
 
-<footer>© 2026 Finora. Personal finance, made clearer.</footer>
+<footer>
+    © 2026 Finora.
+    <span data-public-i18n="footer">Personal finance, made clearer.</span>
+</footer>
 
-<script>
-    const navigation = document.getElementById("navigation");
-    const heroActions = document.getElementById("hero-actions");
-    const accessToken = localStorage.getItem("access_token");
-
-    if (accessToken) {
-        navigation.innerHTML = `
-            <a class="btn btn-light" href="/dashboard/">Dashboard</a>
-            <button class="btn btn-primary" id="logout-button">Sign out</button>
-        `;
-
-        heroActions.innerHTML = `
-            <a class="btn btn-primary" href="/dashboard/">Open my dashboard</a>
-        `;
-
-        document.getElementById("logout-button").addEventListener("click", () => {
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("refresh_token");
-            window.location.reload();
-        });
-    }
-</script>
+<script src="{% static 'js/public-i18n.js' %}"></script>
 </body>
 </html>

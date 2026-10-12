@@ -1,11 +1,16 @@
+
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — Finora</title>
+
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
@@ -34,9 +39,32 @@
             font-weight: bold;
         }
 
-        h1 { margin-bottom: 8px; }
+        .language-row {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
 
-        .muted { color: #667085; }
+        .language-row label {
+            margin: 0;
+        }
+
+        .language-row select {
+            padding: 8px;
+            border: 1px solid #dce2eb;
+            border-radius: 8px;
+            background: white;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        .muted {
+            color: #667085;
+        }
 
         label {
             display: block;
@@ -52,7 +80,37 @@
             font-size: 15px;
         }
 
-        button {
+        .password-field {
+            position: relative;
+            width: 100%;
+        }
+
+        .password-field input {
+            padding-right: 48px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            transform: translateY(-50%);
+            width: auto;
+            margin: 0;
+            padding: 6px;
+            border: none;
+            background: transparent;
+            color: #475467;
+            font-size: 20px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .toggle-password:hover {
+            background: #f2f4f7;
+            border-radius: 6px;
+        }
+
+        button[type="submit"] {
             width: 100%;
             margin-top: 22px;
             padding: 14px;
@@ -64,7 +122,10 @@
             cursor: pointer;
         }
 
-        button:disabled { opacity: .6; }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
 
         #message {
             margin-top: 16px;
@@ -72,65 +133,180 @@
             overflow-wrap: anywhere;
         }
 
-        a { color: #2563eb; }
+        a {
+            color: #2563eb;
+        }
     </style>
 </head>
-<body>
+
+<body data-auth-page="login">
     <main class="form-card">
         <div class="logo">Finora</div>
-        <h1>Welcome back</h1>
-        <p class="muted">Sign in to manage your money.</p>
+
+        <div class="language-row">
+            <label for="auth-language-select" data-auth-i18n="language">
+                Language
+            </label>
+
+            <select id="auth-language-select" aria-label="Language">
+                <option value="en">English</option>
+                <option value="ru">Русский</option>
+                <option value="uz">O‘zbekcha</option>
+            </select>
+        </div>
+
+        <h1 data-auth-i18n="welcomeBack">Welcome back</h1>
+
+        <p class="muted" data-auth-i18n="loginDescription">
+            Sign in to manage your money.
+        </p>
 
         <form id="login-form">
-            <label for="username">Username or email</label>
-            <input id="username" name="username" required autocomplete="username">
+            <label for="username" data-auth-i18n="usernameOrEmail">
+                Username or email
+            </label>
 
-            <label for="password">Password</label>
-            <input id="password" name="password" type="password"
-                   required autocomplete="current-password">
+            <input
+                id="username"
+                name="username"
+                required
+                autocomplete="username"
+            >
 
-            <button id="submit-button" type="submit">Sign in</button>
+            <label for="password" data-auth-i18n="password">
+                Password
+            </label>
+
+            <div class="password-field">
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    autocomplete="current-password"
+                >
+
+                <button
+                    type="button"
+                    class="toggle-password"
+                    data-password-toggle="password"
+                    aria-label="Show password"
+                    title="Show password"
+                >👁️</button>
+            </div>
+
+            <button
+                id="submit-button"
+                type="submit"
+                data-auth-i18n="signIn"
+            >
+                Sign in
+            </button>
         </form>
 
-        <p id="message" role="status"></p>
+        <p id="message" role="status" aria-live="polite"></p>
 
-        <p>Don't have an account?
-            <a href="/register/">Create one</a>
+        <p>
+            <span data-auth-i18n="noAccount">Don't have an account?</span>
+            <a href="/register/" data-auth-i18n="createOne">Create one</a>
         </p>
-        <a href="/">Back to dashboard</a>
+
+        <a href="/" data-auth-i18n="backHome">Back to home</a>
     </main>
 
-    <script>
-        const form = document.getElementById("login-form");
-        const message = document.getElementById("message");
-        const button = document.getElementById("submit-button");
+    <script src="{% static 'js/auth-i18n.js' %}"></script>
 
-        form.addEventListener("submit", async (event) => {
+    <script>
+        const loginForm = document.getElementById("login-form");
+        const message = document.getElementById("message");
+        const submitButton = document.getElementById("submit-button");
+        const passwordInput = document.getElementById("password");
+        const t = window.finoraAuthT;
+
+        function setupPasswordToggle() {
+            document.querySelectorAll("[data-password-toggle]").forEach((toggle) => {
+                const input = document.getElementById(
+                    toggle.dataset.passwordToggle
+                );
+
+                if (!input) return;
+
+                function updateLabel() {
+                    const key = input.type === "password"
+                        ? "showPassword"
+                        : "hidePassword";
+
+                    const label = t(key);
+
+                    toggle.setAttribute("aria-label", label);
+                    toggle.setAttribute("title", label);
+                }
+
+                updateLabel();
+
+                toggle.addEventListener("click", () => {
+                    input.type = input.type === "password"
+                        ? "text"
+                        : "password";
+
+                    toggle.textContent = input.type === "password"
+                        ? "👁️"
+                        : "🙈";
+
+                    updateLabel();
+                });
+            });
+        }
+
+        setupPasswordToggle();
+
+        loginForm.addEventListener("submit", async (event) => {
             event.preventDefault();
+
             message.textContent = "";
-            button.disabled = true;
+            submitButton.disabled = true;
+            submitButton.textContent = t("signingIn");
 
             try {
                 const response = await fetch("/api/auth/login/", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
                     body: JSON.stringify({
-                        username: form.username.value.trim(),
-                        password: form.password.value
+                        username: document.getElementById("username").value.trim(),
+                        password: passwordInput.value
                     })
                 });
 
-                const data = await response.json();
+                const data = await response.json().catch(() => ({}));
 
                 if (!response.ok) {
-                    throw new Error(
-                        Object.values(data).flat().join("\n") ||
-                        "Unable to sign in."
-                    );
+                    const details = [
+                        data.detail,
+                        ...Object.values(data).filter(
+                            (value) => value !== data.detail
+                        ).flat()
+                    ]
+                        .filter((value) => typeof value === "string")
+                        .join("\n");
+
+                    if (
+                        /no active account found with the given credentials|invalid username\/email or password|invalid credentials|incorrect username|incorrect password|invalid username or password/i.test(details)
+                    ) {
+                        throw new Error(t("invalidCredentials"));
+                    }
+
+                    if (/verify your email|email is not verified|email not verified/i.test(details)) {
+                        throw new Error(t("emailNotVerified"));
+                    }
+
+                    throw new Error(details || t("loginFailed"));
                 }
 
                 if (!data.access || !data.refresh) {
-                    throw new Error("The server did not return JWT tokens.");
+                    throw new Error(t("tokensMissing"));
                 }
 
                 localStorage.setItem("access_token", data.access);
@@ -138,9 +314,10 @@
 
                 window.location.href = "/dashboard/";
             } catch (error) {
-                message.textContent = error.message;
+                message.textContent = error.message || t("loginFailed");
             } finally {
-                button.disabled = false;
+                submitButton.disabled = false;
+                submitButton.textContent = t("signIn");
             }
         });
     </script>

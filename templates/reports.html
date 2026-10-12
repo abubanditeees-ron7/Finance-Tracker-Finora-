@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financial Reports — Finora</title>
+
     <style>
         * { box-sizing: border-box; }
         body { margin: 0; font-family: Arial, sans-serif; background: #f4f7fb; color: #182230; }
@@ -15,6 +16,7 @@
         .btn { display:inline-block; border:0; border-radius:9px; padding:11px 15px; font-weight:600; font-size:14px; cursor:pointer; }
         .secondary { background:#eef2f7; color:#344054; }
         .primary { background:#2563eb; color:white; }
+        .btn:disabled { opacity:.65; cursor:wait; }
         main { max-width:1100px; margin:35px auto; padding:0 20px; }
         .muted { color:#667085; }
         .panel { background:white; border:1px solid #e7ebf0; border-radius:16px; padding:24px; margin-top:22px; min-width:0; }
@@ -40,6 +42,7 @@
         .message { margin-top:15px; white-space:pre-wrap; overflow-wrap:anywhere; }
         .error { color:#b42318; }
         .success { color:#15803d; }
+
         @media(max-width:720px) {
             .cards { grid-template-columns:1fr; }
             .columns { grid-template-columns:1fr; }
@@ -47,84 +50,91 @@
         }
     </style>
 </head>
+
 <body>
 <header>
     <a class="logo" href="/">Finora.</a>
+
     <nav>
-        <a class="btn secondary" href="/dashboard/">Dashboard</a>
-        <a class="btn secondary" href="/transactions/">Transactions</a>
-        <a class="btn secondary" href="/manage/">Accounts & Categories</a>
-        <button class="btn primary" id="logout-button">Sign out</button>
+        <a class="btn secondary" href="/dashboard/" data-report-i18n="dashboard">Dashboard</a>
+        <a class="btn secondary" href="/transactions/" data-report-i18n="transactions">Transactions</a>
+        <a class="btn secondary" href="/manage/" data-report-i18n="accountsCategories">Accounts &amp; Categories</a>
+        <button class="btn primary" id="logout-button" data-report-i18n="signOut">Sign out</button>
     </nav>
 </header>
 
 <main>
-    <h1>Financial reports</h1>
-    <p class="muted">Understand your income, expenses and spending habits.</p>
+    <h1 data-report-i18n="heading">Financial reports</h1>
+    <p class="muted" data-report-i18n="description">Understand your income, expenses and spending habits.</p>
 
     <section class="panel">
         <form id="report-form" class="filters">
             <div class="field">
-                <label for="period">Reporting period</label>
+                <label for="period" data-report-i18n="reportingPeriod">Reporting period</label>
                 <select id="period">
-                    <option value="day">Today</option>
-                    <option value="week">This week</option>
-                    <option value="month" selected>This month</option>
-                    <option value="year">This year</option>
-                    <option value="custom">Custom dates</option>
+                    <option value="day" data-report-i18n="today">Today</option>
+                    <option value="week" data-report-i18n="thisWeek">This week</option>
+                    <option value="month" selected data-report-i18n="thisMonth">This month</option>
+                    <option value="year" data-report-i18n="thisYear">This year</option>
+                    <option value="custom" data-report-i18n="customDates">Custom dates</option>
                 </select>
             </div>
 
             <div class="date-fields" id="date-fields" hidden>
                 <div class="field">
-                    <label for="date-from">From</label>
+                    <label for="date-from" data-report-i18n="from">From</label>
                     <input type="date" id="date-from">
                 </div>
                 <div class="field">
-                    <label for="date-to">To</label>
+                    <label for="date-to" data-report-i18n="to">To</label>
                     <input type="date" id="date-to">
                 </div>
             </div>
 
-            <button class="btn primary" id="report-submit" type="submit">
+            <button class="btn primary" id="report-submit" type="submit" data-report-i18n="generateReport">
                 Generate report
             </button>
         </form>
-        <div id="report-message" class="message" role="status"></div>
+
+        <div id="report-message" class="message" role="status" aria-live="polite"></div>
     </section>
 
     <section class="cards">
         <article class="metric balance">
-            <p>Net balance for period</p>
+            <p data-report-i18n="netBalance">Net balance for period</p>
             <div class="amount" id="report-balance">—</div>
         </article>
+
         <article class="metric">
-            <p>Total income</p>
+            <p data-report-i18n="totalIncome">Total income</p>
             <div class="amount" id="report-income">—</div>
         </article>
+
         <article class="metric">
-            <p>Total expenses</p>
+            <p data-report-i18n="totalExpenses">Total expenses</p>
             <div class="amount" id="report-expense">—</div>
         </article>
     </section>
 
     <section class="panel">
-        <h2 id="report-period-title">Report period</h2>
-        <p class="muted" id="report-dates">Select a period to begin.</p>
+        <h2 id="report-period-title" data-report-i18n="reportSummary">Report summary</h2>
+        <p class="muted" id="report-dates" data-report-i18n="selectPeriod">Select a period to begin.</p>
     </section>
 
     <section class="columns">
         <article class="panel">
-            <h2>Income by category</h2>
-            <div id="income-categories" class="empty">No report loaded yet.</div>
+            <h2 data-report-i18n="incomeByCategory">Income by category</h2>
+            <div id="income-categories" class="empty" data-report-i18n="noReportLoaded">No report loaded yet.</div>
         </article>
+
         <article class="panel">
-            <h2>Expenses by category</h2>
-            <div id="expense-categories" class="empty">No report loaded yet.</div>
+            <h2 data-report-i18n="expensesByCategory">Expenses by category</h2>
+            <div id="expense-categories" class="empty" data-report-i18n="noReportLoaded">No report loaded yet.</div>
         </article>
     </section>
 </main>
 
+<script src="/static/js/i18n.js"></script>
 <script src="/static/js/reports.js"></script>
 </body>
 </html>

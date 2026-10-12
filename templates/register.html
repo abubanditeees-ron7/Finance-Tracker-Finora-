@@ -1,11 +1,16 @@
+
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register — Finora</title>
+
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
@@ -25,13 +30,46 @@
             background: white;
             border: 1px solid #e7ebf0;
             border-radius: 18px;
+            box-shadow: 0 12px 35px #1822300c;
         }
 
-        .logo { color: #2563eb; font-size: 25px; font-weight: bold; }
-        h1 { margin-bottom: 8px; }
-        .muted { color: #667085; }
+        .logo {
+            color: #2563eb;
+            font-size: 25px;
+            font-weight: bold;
+        }
 
-        label { display: block; margin: 15px 0 7px; }
+        .language-row {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .language-row label {
+            margin: 0;
+        }
+
+        .language-row select {
+            padding: 8px;
+            border: 1px solid #dce2eb;
+            border-radius: 8px;
+            background: white;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        .muted {
+            color: #667085;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 7px;
+        }
 
         input {
             width: 100%;
@@ -41,7 +79,37 @@
             font-size: 15px;
         }
 
-        button {
+        .password-field {
+            position: relative;
+            width: 100%;
+        }
+
+        .password-field input {
+            padding-right: 48px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            transform: translateY(-50%);
+            width: auto;
+            margin: 0;
+            padding: 6px;
+            border: none;
+            background: transparent;
+            color: #475467;
+            font-size: 20px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .toggle-password:hover {
+            background: #f2f4f7;
+            border-radius: 6px;
+        }
+
+        button[type="submit"] {
             width: 100%;
             margin-top: 20px;
             padding: 13px;
@@ -53,162 +121,338 @@
             cursor: pointer;
         }
 
-        .hidden { display: none; }
-        #message { white-space: pre-wrap; overflow-wrap: anywhere; }
-        a { color: #2563eb; }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #message {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            margin-top: 16px;
+        }
+
+        a {
+            color: #2563eb;
+        }
     </style>
 </head>
-<body>
+
+<body data-auth-page="register">
     <main class="card">
         <div class="logo">Finora</div>
-        <h1>Create account</h1>
-        <p class="muted">Start managing your finances.</p>
+
+        <div class="language-row">
+            <label for="auth-language-select" data-auth-i18n="language">
+                Language
+            </label>
+
+            <select id="auth-language-select" aria-label="Language">
+                <option value="en">English</option>
+                <option value="ru">Русский</option>
+                <option value="uz">O‘zbekcha</option>
+            </select>
+        </div>
+
+        <h1 data-auth-i18n="createAccount">Create account</h1>
+
+        <p class="muted" data-auth-i18n="registerDescription">
+            Start managing your finances.
+        </p>
 
         <form id="register-form">
-            <label for="username">Username</label>
-            <input id="username" name="username" required
-                   maxlength="150" autocomplete="username">
+            <label for="username" data-auth-i18n="username">
+                Username
+            </label>
 
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email" required
-                   autocomplete="email">
+            <input
+                id="username"
+                name="username"
+                required
+                maxlength="150"
+                autocomplete="username"
+            >
 
-            <label for="password">Password</label>
-            <input id="password" name="password" type="password" required
-                   autocomplete="new-password">
+            <label for="email" data-auth-i18n="email">Email</label>
 
-            <label for="password_confirm">Confirm password</label>
-            <input id="password_confirm" name="password_confirm"
-                   type="password" required autocomplete="new-password">
+            <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                autocomplete="email"
+            >
 
-            <button type="submit">Create account</button>
+            <label for="password" data-auth-i18n="password">
+                Password
+            </label>
+
+            <div class="password-field">
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                >
+
+                <button
+                    type="button"
+                    class="toggle-password"
+                    data-password-toggle="password"
+                    aria-label="Show password"
+                    title="Show password"
+                >👁️</button>
+            </div>
+
+            <label for="password_confirm" data-auth-i18n="confirmPassword">
+                Confirm password
+            </label>
+
+            <div class="password-field">
+                <input
+                    id="password_confirm"
+                    name="password_confirm"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                >
+
+                <button
+                    type="button"
+                    class="toggle-password"
+                    data-password-toggle="password_confirm"
+                    aria-label="Show password"
+                    title="Show password"
+                >👁️</button>
+            </div>
+
+            <button
+                id="register-button"
+                type="submit"
+                data-auth-i18n="createAccount"
+            >
+                Create account
+            </button>
         </form>
 
         <form id="verify-form" class="hidden">
-            <h2>Verify your email</h2>
-            <p class="muted">
+            <h2 data-auth-i18n="verifyEmail">Verify your email</h2>
+
+            <p class="muted" data-auth-i18n="verificationDescription">
                 Enter the six-digit code sent to your email.
             </p>
 
-            <label for="verify-email">Email</label>
-            <input id="verify-email" type="email" required>
+            <label for="verify-email" data-auth-i18n="email">Email</label>
 
-            <label for="code">Verification code</label>
-            <input id="code" inputmode="numeric" pattern="[0-9]{6}"
-                   minlength="6" maxlength="6" required>
+            <input
+                id="verify-email"
+                type="email"
+                required
+                autocomplete="email"
+            >
 
-            <button type="submit">Verify email</button>
+            <label for="code" data-auth-i18n="verificationCode">
+                Verification code
+            </label>
+
+            <input
+                id="code"
+                inputmode="numeric"
+                pattern="[0-9]{6}"
+                minlength="6"
+                maxlength="6"
+                required
+                autocomplete="one-time-code"
+            >
+
+            <button
+                id="verify-button"
+                type="submit"
+                data-auth-i18n="verify"
+            >
+                Verify email
+            </button>
         </form>
 
-        <p id="message" role="status"></p>
+        <p id="message" role="status" aria-live="polite"></p>
 
-        <p>Already registered? <a href="/login/">Sign in</a></p>
-        <a href="/">Back to dashboard</a>
+        <p>
+            <span data-auth-i18n="alreadyRegistered">
+                Already registered?
+            </span>
+            <a href="/login/" data-auth-i18n="signIn">Sign in</a>
+        </p>
+
+        <a href="/" data-auth-i18n="backHome">Back to home</a>
     </main>
+
+    <script src="{% static 'js/auth-i18n.js' %}"></script>
 
     <script>
         const registerForm = document.getElementById("register-form");
         const verifyForm = document.getElementById("verify-form");
         const message = document.getElementById("message");
+        const registerButton = document.getElementById("register-button");
+        const verifyButton = document.getElementById("verify-button");
+        const t = window.finoraAuthT;
+
+        function setupPasswordToggles() {
+            document.querySelectorAll("[data-password-toggle]").forEach((toggle) => {
+                const input = document.getElementById(
+                    toggle.dataset.passwordToggle
+                );
+
+                if (!input) return;
+
+                function updateLabel() {
+                    const key = input.type === "password"
+                        ? "showPassword"
+                        : "hidePassword";
+
+                    const label = t(key);
+
+                    toggle.setAttribute("aria-label", label);
+                    toggle.setAttribute("title", label);
+                }
+
+                updateLabel();
+
+                toggle.addEventListener("click", () => {
+                    input.type = input.type === "password"
+                        ? "text"
+                        : "password";
+
+                    toggle.textContent = input.type === "password"
+                        ? "👁️"
+                        : "🙈";
+
+                    updateLabel();
+                });
+            });
+        }
+
+        setupPasswordToggles();
 
         registerForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    message.textContent = "";
+            event.preventDefault();
+            message.textContent = "";
 
-    if (
-        registerForm.password.value !==
-        registerForm.password_confirm.value
-    ) {
-        message.textContent = "Passwords do not match.";
-        return;
-    }
+            const username = document.getElementById("username").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+            const passwordConfirm =
+                document.getElementById("password_confirm").value;
 
-    try {
-        const response = await fetch("/api/auth/register/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                username: registerForm.username.value.trim(),
-                email: registerForm.email.value.trim(),
-                password: registerForm.password.value,
-                password_confirm:
-                    registerForm.password_confirm.value
-            })
+            if (password !== passwordConfirm) {
+                message.textContent = t("passwordsMismatch");
+                return;
+            }
+
+            registerButton.disabled = true;
+            registerButton.textContent = t("creatingAccount");
+
+            try {
+                const response = await fetch("/api/auth/register/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        password: password,
+                        password_confirm: passwordConfirm
+                    })
+                });
+
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    const details = Object.values(data)
+                        .flat()
+                        .filter((value) => typeof value === "string")
+                        .join("\n");
+
+                    throw new Error(details || t("registrationFailed"));
+                }
+
+                document.getElementById("verify-email").value = email;
+
+                registerForm.classList.add("hidden");
+                verifyForm.classList.remove("hidden");
+
+                message.textContent = t("registrationSuccess");
+            } catch (error) {
+                message.textContent =
+                    error.message || t("registrationFailed");
+
+                console.error("Registration error:", error);
+            } finally {
+                registerButton.disabled = false;
+                registerButton.textContent = t("createAccount");
+            }
         });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(
-                Object.values(data)
-                    .flat()
-                    .join("\n") || "Registration failed."
-            );
-        }
-
-        // Registration does not return tokens yet.
-        document.getElementById("verify-email").value =
-            registerForm.email.value.trim();
-
-        registerForm.classList.add("hidden");
-        verifyForm.classList.remove("hidden");
-
-        message.textContent =
-            "Account created. Check the terminal for the verification code.";
-    } catch (error) {
-        message.textContent = error.message;
-    }
-});
-
 
         verifyForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    message.textContent = "";
+            event.preventDefault();
+            message.textContent = "";
 
-    try {
-        const response = await fetch("/api/auth/verify-email/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                email: document.getElementById("verify-email").value.trim(),
-                code: document.getElementById("code").value.trim()
-            })
+            verifyButton.disabled = true;
+            verifyButton.textContent = t("verifying");
+
+            try {
+                const email = document.getElementById("verify-email").value.trim();
+                const code = document.getElementById("code").value.trim();
+
+                const response = await fetch("/api/auth/verify-email/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        code: code
+                    })
+                });
+
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    const details = Object.values(data)
+                        .flat()
+                        .filter((value) => typeof value === "string")
+                        .join("\n");
+
+                    throw new Error(details || t("verificationFailed"));
+                }
+
+                if (!data.access || !data.refresh) {
+                    throw new Error(t("tokensMissing"));
+                }
+
+                localStorage.setItem("access_token", data.access);
+                localStorage.setItem("refresh_token", data.refresh);
+
+                message.textContent = t("verificationSuccess");
+
+                window.location.href = "/dashboard/";
+            } catch (error) {
+                message.textContent =
+                    error.message || t("verificationFailed");
+
+                console.error("Verification error:", error);
+            } finally {
+                verifyButton.disabled = false;
+                verifyButton.textContent = t("verify");
+            }
         });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(JSON.stringify(data));
-        }
-
-        console.log("Verification response:", data);
-        console.log("Access token exists:", Boolean(data.access));
-        console.log("Refresh token exists:", Boolean(data.refresh));
-
-        const accessToken = data.access;
-        const refreshToken = data.refresh;
-
-        if (!accessToken || !refreshToken) {
-            throw new Error(
-                "Tokens are missing. Check the browser console."
-            );
-        }
-
-        localStorage.setItem("access_token", accessToken);
-        localStorage.setItem("refresh_token", refreshToken);
-
-        message.textContent = "Email verified! Opening dashboard...";
-
-        window.location.href = "/dashboard/";
-    } catch (error) {
-        message.textContent = error.message;
-        console.error("Verification error:", error);
-    }
-});
     </script>
 </body>
 </html>
