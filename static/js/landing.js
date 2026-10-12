@@ -1,4 +1,3 @@
-
 (() => {
     const translations = {
         en: {
@@ -131,9 +130,6 @@
                 <a class="btn btn-light" href="/dashboard/">
                     ${t("dashboard")}
                 </a>
-                <button class="btn btn-primary" id="logout-button" type="button">
-                    ${t("signOut")}
-                </button>
             `;
 
             heroActions.innerHTML = `

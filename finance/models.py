@@ -1,9 +1,23 @@
+import re
+
+from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Q
 
 from decimal import Decimal
+
+
+def validate_card_reference(value):
+    """Reject full bank card numbers."""
+    digits = re.sub(r"\D", "", value or "")
+
+    if len(digits) >= 12:
+        raise ValidationError(
+            "Enter a card label or a short reference, "
+            "not a full card number."
+        )
 
 
 class Category(models.Model):
@@ -53,7 +67,11 @@ class FinancialAccount(models.Model):
         default=AccountType.CASH,
     )
     bank_name = models.CharField(max_length=100, blank=True)
-    card_number = models.CharField(max_length=30, blank=True)
+    card_number = models.CharField(
+        max_length=30,
+        blank=True,
+        validators=[validate_card_reference],
+    )
     color = models.CharField(max_length=7, default="#0D9488")
     created_at = models.DateTimeField(auto_now_add=True)
 

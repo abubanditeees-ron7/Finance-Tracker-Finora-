@@ -1,4 +1,3 @@
-
 (() => {
     const translations = {
         en: {
@@ -185,3 +184,163 @@
 
     applyLanguage(currentLanguage);
 })();
+
+const registerForm = document.getElementById("register-form");
+        const verifyForm = document.getElementById("verify-form");
+        const message = document.getElementById("message");
+        const registerButton = document.getElementById("register-button");
+        const verifyButton = document.getElementById("verify-button");
+        const t = window.finoraAuthT;
+
+        function setupPasswordToggles() {
+            document.querySelectorAll("[data-password-toggle]").forEach((toggle) => {
+                const input = document.getElementById(
+                    toggle.dataset.passwordToggle
+                );
+
+                if (!input) return;
+
+                function updateLabel() {
+                    const key = input.type === "password"
+                        ? "showPassword"
+                        : "hidePassword";
+
+                    const label = t(key);
+
+                    toggle.setAttribute("aria-label", label);
+                    toggle.setAttribute("title", label);
+                }
+
+                updateLabel();
+
+                toggle.addEventListener("click", () => {
+                    input.type = input.type === "password"
+                        ? "text"
+                        : "password";
+
+                    toggle.textContent = input.type === "password"
+                        ? "👁️"
+                        : "🙈";
+
+                    updateLabel();
+                });
+            });
+        }
+
+        setupPasswordToggles();
+
+        registerForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            message.textContent = "";
+
+            const username = document.getElementById("username").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+            const passwordConfirm =
+                document.getElementById("password_confirm").value;
+
+            if (password !== passwordConfirm) {
+                message.textContent = t("passwordsMismatch");
+                return;
+            }
+
+            registerButton.disabled = true;
+            registerButton.textContent = t("creatingAccount");
+
+            try {
+                const response = await fetch("/api/auth/register/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        password: password,
+                        password_confirm: passwordConfirm
+                    })
+                });
+
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    const details = Object.values(data)
+                        .flat()
+                        .filter((value) => typeof value === "string")
+                        .join("\n");
+
+                    throw new Error(details || t("registrationFailed"));
+                }
+
+                document.getElementById("verify-email").value = email;
+
+                registerForm.classList.add("hidden");
+                verifyForm.classList.remove("hidden");
+
+                message.textContent = t("registrationSuccess");
+            } catch (error) {
+                message.textContent =
+                    error.message || t("registrationFailed");
+
+                console.error("Registration error:", error);
+            } finally {
+                registerButton.disabled = false;
+                registerButton.textContent = t("createAccount");
+            }
+        });
+
+        verifyForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            message.textContent = "";
+
+            verifyButton.disabled = true;
+            verifyButton.textContent = t("verifying");
+
+            try {
+                const email = document.getElementById("verify-email").value.trim();
+                const code = document.getElementById("code").value.trim();
+
+                const response = await fetch("/api/auth/verify-email/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        code: code
+                    })
+                });
+
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    const details = Object.values(data)
+                        .flat()
+                        .filter((value) => typeof value === "string")
+                        .join("\n");
+
+                    throw new Error(details || t("verificationFailed"));
+                }
+
+                if (!data.access || !data.refresh) {
+                    throw new Error(t("tokensMissing"));
+                }
+
+                localStorage.setItem("access_token", data.access);
+                localStorage.setItem("refresh_token", data.refresh);
+
+                message.textContent = t("verificationSuccess");
+
+                window.location.href = "/dashboard/";
+            } catch (error) {
+                message.textContent =
+                    error.message || t("verificationFailed");
+
+                console.error("Verification error:", error);
+            } finally {
+                verifyButton.disabled = false;
+                verifyButton.textContent = t("verify");
+            }
+        });

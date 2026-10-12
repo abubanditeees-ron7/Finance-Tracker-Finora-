@@ -22,7 +22,7 @@ from drf_spectacular.views import (
     SpectacularRedocView,
 )
 
-from config.web_views import (
+from config.views import (
     landing_page,
     dashboard,
     transactions_page,
@@ -30,7 +30,7 @@ from config.web_views import (
     reports_page,
     settings_page,
 )
-from accounts.web_views import( 
+from accounts.views import( 
     login_page, 
     register_page,
 )

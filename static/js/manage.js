@@ -1,7 +1,251 @@
 
+(() => {
+    const translations = {
+        en: {
+            transactions: "Transactions",
+            reports: "Financial reports",
+            settings: "Settings",
+            signOut: "Sign out",
+            dashboard: "Dashboard",
+            expense: "Expense",
+            income: "Income",
+            saveChanges: "Save changes",
+            loadingAccounts: "Loading accounts...",
+            loadAccountsError: "Could not load accounts",
+            loadCategoriesError: "Could not load categories",
+            edit: "Edit",
+            delete: "Delete",
+            sessionExpired: "Session expired. Please sign in again.",
+            requestFailed: "Request failed",
+            manageHeading: "Accounts & Categories",
+            manageDescription: "Manage the accounts and categories used in your transactions.",
+            accountsTab: "Accounts",
+            categoriesTab: "Categories",
+            addAccount: "Add account",
+            editAccount: "Edit account",
+            accountName: "Account name",
+            accountNamePlaceholder: "My wallet",
+            accountType: "Account type",
+            cash: "Cash",
+            bankCard: "Bank card",
+            bankAccount: "Bank account",
+            other: "Other",
+            bankNameOptional: "Bank name (optional)",
+            cardLabelOptional: "Card label or last 4 digits (optional)",
+            cardReferencePlaceholder: "Enter a label or last 4 digits only",
+            cardSecurityNote: "Do not enter a full card number, PIN, CVV, or other sensitive card details.",
+            color: "Color",
+            saveAccount: "Save account",
+            saveCategory: "Save category",
+            cancel: "Cancel",
+            yourAccounts: "Your accounts",
+            noAccountsYet: "No accounts yet. Add your first account.",
+            addCategory: "Add category",
+            editCategory: "Edit category",
+            categoryName: "Category name",
+            categoryNamePlaceholder: "Food, Salary...",
+            categoryType: "Category type",
+            yourCategories: "Your categories",
+            loadingCategories: "Loading categories...",
+            noCategoriesYet: "No categories yet. Add your first category.",
+            accountCreated: "Account created successfully.",
+            accountUpdated: "Account updated successfully.",
+            categoryCreated: "Category created successfully.",
+            categoryUpdated: "Category updated successfully.",
+            accountDeleted: "Account deleted.",
+            categoryDeleted: "Category deleted.",
+            deleteAccountConfirm: "Delete this account? Accounts used by transactions cannot be deleted.",
+            deleteCategoryConfirm: "Delete this category? Categories used by transactions cannot be deleted."
+        },
+
+        ru: {
+            transactions: "Транзакции",
+            reports: "Финансовые отчёты",
+            settings: "Настройки",
+            signOut: "Выйти",
+            dashboard: "Панель управления",
+            expense: "Расход",
+            income: "Доход",
+            saveChanges: "Сохранить изменения",
+            loadingAccounts: "Загрузка счетов...",
+            loadAccountsError: "Не удалось загрузить счета",
+            loadCategoriesError: "Не удалось загрузить категории",
+            edit: "Изменить",
+            delete: "Удалить",
+            sessionExpired: "Сессия истекла. Войдите в аккаунт снова.",
+            requestFailed: "Ошибка запроса",
+            manageHeading: "Счета и категории",
+            manageDescription: "Управляйте счетами и категориями для транзакций.",
+            accountsTab: "Счета",
+            categoriesTab: "Категории",
+            addAccount: "Добавить счёт",
+            editAccount: "Редактировать счёт",
+            accountName: "Название счёта",
+            accountNamePlaceholder: "Мой кошелёк",
+            accountType: "Тип счёта",
+            cash: "Наличные",
+            bankCard: "Банковская карта",
+            bankAccount: "Банковский счёт",
+            other: "Другое",
+            bankNameOptional: "Название банка (необязательно)",
+            cardLabelOptional: "Метка карты или последние 4 цифры (необязательно)",
+            cardReferencePlaceholder: "Укажите метку или только последние 4 цифры",
+            cardSecurityNote: "Не вводите полный номер карты, PIN, CVV или другие конфиденциальные данные карты.",
+            color: "Цвет",
+            saveAccount: "Сохранить счёт",
+            saveCategory: "Сохранить категорию",
+            cancel: "Отмена",
+            yourAccounts: "Ваши счета",
+            noAccountsYet: "Счетов пока нет. Добавьте первый счёт.",
+            addCategory: "Добавить категорию",
+            editCategory: "Редактировать категорию",
+            categoryName: "Название категории",
+            categoryNamePlaceholder: "Продукты, зарплата...",
+            categoryType: "Тип категории",
+            yourCategories: "Ваши категории",
+            loadingCategories: "Загрузка категорий...",
+            noCategoriesYet: "Категорий пока нет. Добавьте первую категорию.",
+            accountCreated: "Счёт успешно создан.",
+            accountUpdated: "Счёт успешно обновлён.",
+            categoryCreated: "Категория успешно создана.",
+            categoryUpdated: "Категория успешно обновлена.",
+            accountDeleted: "Счёт удалён.",
+            categoryDeleted: "Категория удалена.",
+            deleteAccountConfirm: "Удалить этот счёт? Счета, используемые в транзакциях, удалить нельзя.",
+            deleteCategoryConfirm: "Удалить эту категорию? Категории, используемые в транзакциях, удалить нельзя."
+        },
+
+        uz: {
+            transactions: "Tranzaksiyalar",
+            reports: "Moliyaviy hisobotlar",
+            settings: "Sozlamalar",
+            signOut: "Chiqish",
+            dashboard: "Boshqaruv paneli",
+            expense: "Xarajat",
+            income: "Daromad",
+            saveChanges: "O‘zgarishlarni saqlash",
+            loadingAccounts: "Hisoblar yuklanmoqda...",
+            loadAccountsError: "Hisoblarni yuklab bo‘lmadi",
+            loadCategoriesError: "Kategoriyalarni yuklab bo‘lmadi",
+            edit: "Tahrirlash",
+            delete: "O‘chirish",
+            sessionExpired: "Sessiya tugadi. Qaytadan tizimga kiring.",
+            requestFailed: "So‘rov bajarilmadi",
+            manageHeading: "Hisoblar va kategoriyalar",
+            manageDescription: "Tranzaksiyalarda ishlatiladigan hisob va kategoriyalarni boshqaring.",
+            accountsTab: "Hisoblar",
+            categoriesTab: "Kategoriyalar",
+            addAccount: "Hisob qo‘shish",
+            editAccount: "Hisobni tahrirlash",
+            accountName: "Hisob nomi",
+            accountNamePlaceholder: "Mening hamyonim",
+            accountType: "Hisob turi",
+            cash: "Naqd pul",
+            bankCard: "Bank kartasi",
+            bankAccount: "Bank hisobi",
+            other: "Boshqa",
+            bankNameOptional: "Bank nomi (ixtiyoriy)",
+            cardLabelOptional: "Karta belgisi yoki oxirgi 4 raqam (ixtiyoriy)",
+            cardReferencePlaceholder: "Belgi yoki faqat oxirgi 4 raqamni kiriting",
+            cardSecurityNote: "To‘liq karta raqami, PIN, CVV yoki boshqa maxfiy karta ma’lumotlarini kiritmang.",
+            color: "Rang",
+            saveAccount: "Hisobni saqlash",
+            saveCategory: "Kategoriyani saqlash",
+            cancel: "Bekor qilish",
+            yourAccounts: "Hisoblaringiz",
+            noAccountsYet: "Hozircha hisoblar yo‘q. Birinchi hisobni qo‘shing.",
+            addCategory: "Kategoriya qo‘shish",
+            editCategory: "Kategoriyani tahrirlash",
+            categoryName: "Kategoriya nomi",
+            categoryNamePlaceholder: "Oziq-ovqat, maosh...",
+            categoryType: "Kategoriya turi",
+            yourCategories: "Kategoriyalaringiz",
+            loadingCategories: "Kategoriyalar yuklanmoqda...",
+            noCategoriesYet: "Hozircha kategoriyalar yo‘q. Birinchi kategoriyani qo‘shing.",
+            accountCreated: "Hisob muvaffaqiyatli yaratildi.",
+            accountUpdated: "Hisob muvaffaqiyatli yangilandi.",
+            categoryCreated: "Kategoriya muvaffaqiyatli yaratildi.",
+            categoryUpdated: "Kategoriya muvaffaqiyatli yangilandi.",
+            accountDeleted: "Hisob o‘chirildi.",
+            categoryDeleted: "Kategoriya o‘chirildi.",
+            deleteAccountConfirm: "Bu hisob o‘chirilsinmi? Tranzaksiyalarda ishlatilayotgan hisoblarni o‘chirib bo‘lmaydi.",
+            deleteCategoryConfirm: "Bu kategoriya o‘chirilsinmi? Tranzaksiyalarda ishlatilayotgan kategoriyalarni o‘chirib bo‘lmaydi."
+        }
+    };
+
+    let currentLanguage = localStorage.getItem("finora_language") || "en";
+
+    if (!translations[currentLanguage]) {
+        currentLanguage = "en";
+    }
+
+    function t(key) {
+        return translations[currentLanguage]?.[key]
+            ?? translations.en[key]
+            ?? key;
+    }
+
+    function translateDOM(root = document) {
+        document.documentElement.lang = currentLanguage;
+
+        root.querySelectorAll("[data-i18n]").forEach((element) => {
+            element.textContent = t(element.dataset.i18n);
+        });
+
+        root.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
+            element.placeholder = t(element.dataset.i18nPlaceholder);
+        });
+
+        root.querySelectorAll("[data-i18n-title]").forEach((element) => {
+            element.title = t(element.dataset.i18nTitle);
+        });
+
+        root.querySelectorAll("[data-i18n-aria-label]").forEach((element) => {
+            element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
+        });
+    }
+
+    async function initLanguage() {
+        const accessToken = localStorage.getItem("access_token");
+
+        if (accessToken) {
+            try {
+                const response = await fetch("/api/auth/profile/", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        Accept: "application/json"
+                    }
+                });
+
+                if (response.ok) {
+                    const profile = await response.json();
+
+                    if (["en", "ru", "uz"].includes(profile.language)) {
+                        currentLanguage = profile.language;
+                        localStorage.setItem("finora_language", currentLanguage);
+                    }
+                }
+            } catch (error) {
+                console.error("Could not load language preference:", error);
+            }
+        }
+
+        translateDOM();
+        return currentLanguage;
+    }
+
+    window.FinoraPageI18n = {
+        t,
+        initLanguage,
+        translateDOM,
+        getLanguage: () => currentLanguage
+    };
+})();
+
+const t = (key) => window.FinoraPageI18n.t(key);
+
 const API = "/api";
 const $ = (id) => document.getElementById(id);
-const t = (key) => window.FinoraI18n?.t(key) ?? key;
 
 let accounts = [];
 let categories = [];
@@ -36,7 +280,11 @@ async function apiRequest(path, options = {}) {
     if (!response.ok) {
         const message = data && typeof data === "object"
             ? Object.entries(data).map(([key, value]) =>
-                `${key}: ${Array.isArray(value) ? value.join(", ") : typeof value === "object" ? JSON.stringify(value) : value}`
+                `${key}: ${Array.isArray(value)
+                    ? value.join(", ")
+                    : typeof value === "object"
+                        ? JSON.stringify(value)
+                        : value}`
             ).join("\n")
             : `${t("requestFailed")} (${response.status})`;
 
@@ -53,12 +301,19 @@ function listFrom(data) {
 
 function showMessage(id, text, isError = false) {
     const element = $(id);
+
+    if (!element) return;
+
     element.textContent = text;
     element.className = `message ${isError ? "error" : "success"}`;
 }
 
 function clearMessage(id) {
-    $(id).textContent = "";
+    const element = $(id);
+
+    if (element) {
+        element.textContent = "";
+    }
 }
 
 function createButton(text, className, onClick) {
@@ -107,6 +362,9 @@ function addItem(container, title, subtitle, editHandler, deleteHandler, color) 
 
 async function loadAccounts() {
     const container = $("accounts-list");
+
+    if (!container) return;
+
     container.textContent = t("loadingAccounts");
 
     try {
@@ -150,11 +408,15 @@ async function loadAccounts() {
     } catch (error) {
         container.textContent = t("loadAccountsError");
         showMessage("account-message", error.message, true);
+        console.error("Could not load accounts:", error);
     }
 }
 
 async function loadCategories() {
     const container = $("categories-list");
+
+    if (!container) return;
+
     container.textContent = t("loadingCategories");
 
     try {
@@ -183,21 +445,27 @@ async function loadCategories() {
     } catch (error) {
         container.textContent = t("loadCategoriesError");
         showMessage("category-message", error.message, true);
+        console.error("Could not load categories:", error);
     }
 }
 
 function resetAccountForm() {
     editingAccountId = null;
-    $("account-form").reset();
-    $("account-color").value = "#0D9488";
-    $("account-form-title").textContent = t("addAccount");
-    $("account-save").textContent = t("saveAccount");
-    $("account-cancel").hidden = true;
+
+    const form = $("account-form");
+    if (form) form.reset();
+
+    if ($("account-color")) $("account-color").value = "#0D9488";
+    if ($("account-form-title")) $("account-form-title").textContent = t("addAccount");
+    if ($("account-save")) $("account-save").textContent = t("saveAccount");
+    if ($("account-cancel")) $("account-cancel").hidden = true;
+
     clearMessage("account-message");
 }
 
 function editAccount(account) {
     editingAccountId = account.id;
+
     $("account-form-title").textContent = t("editAccount");
     $("account-save").textContent = t("saveChanges");
     $("account-cancel").hidden = false;
@@ -251,6 +519,7 @@ async function saveAccount(event) {
         await loadAccounts();
     } catch (error) {
         showMessage("account-message", error.message, true);
+        console.error("Could not save account:", error);
     } finally {
         $("account-save").disabled = false;
     }
@@ -265,21 +534,27 @@ async function deleteAccount(id) {
         await loadAccounts();
     } catch (error) {
         showMessage("account-message", error.message, true);
+        console.error("Could not delete account:", error);
     }
 }
 
 function resetCategoryForm() {
     editingCategoryId = null;
-    $("category-form").reset();
-    $("category-color").value = "#4F46E5";
-    $("category-form-title").textContent = t("addCategory");
-    $("category-save").textContent = t("saveCategory");
-    $("category-cancel").hidden = true;
+
+    const form = $("category-form");
+    if (form) form.reset();
+
+    if ($("category-color")) $("category-color").value = "#4F46E5";
+    if ($("category-form-title")) $("category-form-title").textContent = t("addCategory");
+    if ($("category-save")) $("category-save").textContent = t("saveCategory");
+    if ($("category-cancel")) $("category-cancel").hidden = true;
+
     clearMessage("category-message");
 }
 
 function editCategory(category) {
     editingCategoryId = category.id;
+
     $("category-form-title").textContent = t("editCategory");
     $("category-save").textContent = t("saveChanges");
     $("category-cancel").hidden = false;
@@ -322,6 +597,7 @@ async function saveCategory(event) {
         await loadCategories();
     } catch (error) {
         showMessage("category-message", error.message, true);
+        console.error("Could not save category:", error);
     } finally {
         $("category-save").disabled = false;
     }
@@ -336,6 +612,7 @@ async function deleteCategory(id) {
         await loadCategories();
     } catch (error) {
         showMessage("category-message", error.message, true);
+        console.error("Could not delete category:", error);
     }
 }
 
@@ -350,10 +627,15 @@ function setupTabs() {
             button.classList.add("active");
             button.classList.remove("secondary");
 
-            $("accounts-panel").hidden =
-                button.dataset.panel !== "accounts-panel";
-            $("categories-panel").hidden =
-                button.dataset.panel !== "categories-panel";
+            if ($("accounts-panel")) {
+                $("accounts-panel").hidden =
+                    button.dataset.panel !== "accounts-panel";
+            }
+
+            if ($("categories-panel")) {
+                $("categories-panel").hidden =
+                    button.dataset.panel !== "categories-panel";
+            }
         });
     });
 }
@@ -364,22 +646,47 @@ async function init() {
         return;
     }
 
-    await window.FinoraI18n?.init();
+    await window.FinoraPageI18n.initLanguage();
 
-    $("account-form").addEventListener("submit", saveAccount);
-    $("category-form").addEventListener("submit", saveCategory);
-    $("account-cancel").addEventListener("click", resetAccountForm);
-    $("category-cancel").addEventListener("click", resetCategoryForm);
+    const accountForm = $("account-form");
+    const categoryForm = $("category-form");
+    const accountCancel = $("account-cancel");
+    const categoryCancel = $("category-cancel");
 
-    $("logout-button").addEventListener("click", () => {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        window.location.href = "/";
-    });
+    if (accountForm) {
+        accountForm.addEventListener("submit", saveAccount);
+    }
+
+    if (categoryForm) {
+        categoryForm.addEventListener("submit", saveCategory);
+    }
+
+    if (accountCancel) {
+        accountCancel.addEventListener("click", resetAccountForm);
+    }
+
+    if (categoryCancel) {
+        categoryCancel.addEventListener("click", resetCategoryForm);
+    }
+
+    // The logout button is optional on this page.
+    // If it exists, attach the handler; otherwise continue normally.
+    const logoutButton = $("logout-button");
+
+    if (logoutButton) {
+        logoutButton.addEventListener("click", () => {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            window.location.href = "/";
+        });
+    }
 
     setupTabs();
 
-    await Promise.all([loadAccounts(), loadCategories()]);
+    await Promise.all([
+        loadAccounts(),
+        loadCategories()
+    ]);
 }
 
 document.addEventListener("DOMContentLoaded", init);

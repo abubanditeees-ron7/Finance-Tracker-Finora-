@@ -23,9 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / ".env")
 
-SECRET_KEY = os.getenv("SECRET_KEY", "")
 
-DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+SECRET_KEY = os.getenv("SECRET_KEY", "").strip()
+
+DEBUG = os.getenv("DEBUG", "False").strip().lower() == "true"
 
 ALLOWED_HOSTS = [
     host.strip()
@@ -35,9 +36,12 @@ ALLOWED_HOSTS = [
     if host.strip()
 ]
 
-if not SECRET_KEY or SECRET_KEY == "replace-this-with-a-real-secret-key":
-    if not DEBUG:
-        raise RuntimeError("Set a secure SECRET_KEY in the environment")
+if len(SECRET_KEY) < 50 or SECRET_KEY.lower().startswith(
+    ("replace-", "your-")
+):
+    raise RuntimeError(
+        "Set a unique SECRET_KEY of at least 50 characters."
+    )
 
 
 INSTALLED_APPS = [
@@ -88,27 +92,49 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 
-DB_ENGINE = os.getenv("DB_ENGINE", "sqlite").lower()
+DB_ENGINE = os.getenv("DB_ENGINE", "postgres").strip().lower()
 
-if DB_ENGINE == "postgres":
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("DB_NAME", ""),
-            "USER": os.getenv("DB_USER", ""),
-            "PASSWORD": os.getenv("DB_PASSWORD", ""),
-            "HOST": os.getenv("DB_HOST", ""),
-            "PORT": os.getenv("DB_PORT", "5432"),
-            "CONN_MAX_AGE": 60,
-        }
+if DB_ENGINE not in ("postgres", "postgresql"):
+    raise RuntimeError(
+        "Finora requires PostgreSQL. "
+        "Set DB_ENGINE=postgres in your .env file."
+    )
+
+DB_NAME = os.getenv("DB_NAME", "").strip()
+DB_USER = os.getenv("DB_USER", "").strip()
+DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+DB_HOST = os.getenv("DB_HOST", "").strip()
+DB_PORT = os.getenv("DB_PORT", "5432").strip()
+
+required_db_settings = {
+    "DB_NAME": DB_NAME,
+    "DB_USER": DB_USER,
+    "DB_HOST": DB_HOST,
+}
+
+missing_db_settings = [
+    name
+    for name, value in required_db_settings.items()
+    if not value
+]
+
+if missing_db_settings:
+    raise RuntimeError(
+        "Missing PostgreSQL settings: "
+        + ", ".join(missing_db_settings)
+    )
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": DB_NAME,
+        "USER": DB_USER,
+        "PASSWORD": DB_PASSWORD,
+        "HOST": DB_HOST,
+        "PORT": DB_PORT,
+        "CONN_MAX_AGE": 60,
     }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / os.getenv("DB_NAME", "db.sqlite3"),
-        }
-    }
+}
 
 
 AUTH_PASSWORD_VALIDATORS = [

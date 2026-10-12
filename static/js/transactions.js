@@ -1,9 +1,246 @@
 
+(() => {
+    const translations = {
+        "en": {
+            "signOut": "Sign out",
+            "dashboard": "Dashboard",
+            "transactionsHeading": "Transactions",
+            "transactionsDescription": "Manage your income and expenses in one place.",
+            "addTransaction": "Add transaction",
+            "editTransaction": "Edit transaction",
+            "transactionType": "Transaction type",
+            "expense": "Expense",
+            "income": "Income",
+            "amountUZS": "Amount (UZS)",
+            "date": "Date",
+            "account": "Account",
+            "category": "Category",
+            "commentOptional": "Comment (optional)",
+            "commentPlaceholder": "What was this transaction for?",
+            "saveTransaction": "Save transaction",
+            "saveChanges": "Save changes",
+            "cancelEdit": "Cancel edit",
+            "yourTransactions": "Your transactions",
+            "allTypes": "All types",
+            "incomeOnly": "Income only",
+            "expensesOnly": "Expenses only",
+            "typeColumn": "Type",
+            "amountColumn": "Amount",
+            "commentColumn": "Comment",
+            "actionsColumn": "Actions",
+            "previous": "Previous",
+            "next": "Next",
+            "loadingAccounts": "Loading accounts...",
+            "chooseCategory": "Choose a category",
+            "noCategoriesForType": "No categories for this type",
+            "chooseAccount": "Choose an account",
+            "noAccounts": "No accounts yet — create one first",
+            "noCategories": "No categories yet — create one first",
+            "loadAccountsError": "Could not load accounts",
+            "loadCategoriesError": "Could not load categories",
+            "noTransactionsFound": "No transactions found on this page.",
+            "transactionCount": "transaction(s) on this page",
+            "page": "Page",
+            "of": "of",
+            "edit": "Edit",
+            "delete": "Delete",
+            "deleteConfirm": "Delete this transaction? This action cannot be undone.",
+            "transactionDeleted": "Transaction deleted.",
+            "transactionCreated": "Transaction created successfully.",
+            "transactionUpdated": "Transaction updated successfully.",
+            "createAccountCategoryFirst": "Create an account and a matching category first.",
+            "sessionExpired": "Session expired. Please sign in again.",
+            "apiError": "API error",
+            "requestFailed": "Request failed",
+            "loading": "Loading...",
+            "accountsError": "Accounts could not be loaded",
+            "categoriesError": "Categories could not be loaded"
+        },
+        "ru": {
+            "signOut": "Выйти",
+            "dashboard": "Панель управления",
+            "transactionsHeading": "Транзакции",
+            "transactionsDescription": "Управляйте доходами и расходами в одном месте.",
+            "addTransaction": "Добавить транзакцию",
+            "editTransaction": "Редактировать транзакцию",
+            "transactionType": "Тип транзакции",
+            "expense": "Расход",
+            "income": "Доход",
+            "amountUZS": "Сумма (UZS)",
+            "date": "Дата",
+            "account": "Счёт",
+            "category": "Категория",
+            "commentOptional": "Комментарий (необязательно)",
+            "commentPlaceholder": "На что была потрачена сумма?",
+            "saveTransaction": "Сохранить транзакцию",
+            "saveChanges": "Сохранить изменения",
+            "cancelEdit": "Отменить редактирование",
+            "yourTransactions": "Ваши транзакции",
+            "allTypes": "Все типы",
+            "incomeOnly": "Только доходы",
+            "expensesOnly": "Только расходы",
+            "typeColumn": "Тип",
+            "amountColumn": "Сумма",
+            "commentColumn": "Комментарий",
+            "actionsColumn": "Действия",
+            "previous": "Назад",
+            "next": "Далее",
+            "loadingAccounts": "Загрузка счетов...",
+            "chooseCategory": "Выберите категорию",
+            "noCategoriesForType": "Нет категорий для этого типа",
+            "chooseAccount": "Выберите счёт",
+            "noAccounts": "Счетов пока нет — сначала создайте счёт",
+            "noCategories": "Категорий пока нет — сначала создайте категорию",
+            "loadAccountsError": "Не удалось загрузить счета",
+            "loadCategoriesError": "Не удалось загрузить категории",
+            "noTransactionsFound": "На этой странице транзакций нет.",
+            "transactionCount": "транзакций на этой странице",
+            "page": "Страница",
+            "of": "из",
+            "edit": "Изменить",
+            "delete": "Удалить",
+            "deleteConfirm": "Удалить эту транзакцию? Это действие нельзя отменить.",
+            "transactionDeleted": "Транзакция удалена.",
+            "transactionCreated": "Транзакция успешно создана.",
+            "transactionUpdated": "Транзакция успешно обновлена.",
+            "createAccountCategoryFirst": "Сначала создайте счёт и подходящую категорию.",
+            "sessionExpired": "Сессия истекла. Войдите в аккаунт снова.",
+            "apiError": "Ошибка API",
+            "requestFailed": "Ошибка запроса",
+            "loading": "Загрузка...",
+            "accountsError": "Не удалось загрузить счета",
+            "categoriesError": "Не удалось загрузить категории"
+        },
+        "uz": {
+            "signOut": "Chiqish",
+            "dashboard": "Boshqaruv paneli",
+            "transactionsHeading": "Tranzaksiyalar",
+            "transactionsDescription": "Daromad va xarajatlaringizni bir joyda boshqaring.",
+            "addTransaction": "Tranzaksiya qo‘shish",
+            "editTransaction": "Tranzaksiyani tahrirlash",
+            "transactionType": "Tranzaksiya turi",
+            "expense": "Xarajat",
+            "income": "Daromad",
+            "amountUZS": "Summa (UZS)",
+            "date": "Sana",
+            "account": "Hisob",
+            "category": "Kategoriya",
+            "commentOptional": "Izoh (ixtiyoriy)",
+            "commentPlaceholder": "Bu tranzaksiya nima uchun edi?",
+            "saveTransaction": "Tranzaksiyani saqlash",
+            "saveChanges": "O‘zgarishlarni saqlash",
+            "cancelEdit": "Tahrirlashni bekor qilish",
+            "yourTransactions": "Tranzaksiyalaringiz",
+            "allTypes": "Barcha turlar",
+            "incomeOnly": "Faqat daromad",
+            "expensesOnly": "Faqat xarajat",
+            "typeColumn": "Turi",
+            "amountColumn": "Summa",
+            "commentColumn": "Izoh",
+            "actionsColumn": "Amallar",
+            "previous": "Oldingi",
+            "next": "Keyingi",
+            "loadingAccounts": "Hisoblar yuklanmoqda...",
+            "chooseCategory": "Kategoriyani tanlang",
+            "noCategoriesForType": "Bu tur uchun kategoriyalar yo‘q",
+            "chooseAccount": "Hisobni tanlang",
+            "noAccounts": "Hozircha hisoblar yo‘q — avval hisob yarating",
+            "noCategories": "Hozircha kategoriyalar yo‘q — avval kategoriya yarating",
+            "loadAccountsError": "Hisoblarni yuklab bo‘lmadi",
+            "loadCategoriesError": "Kategoriyalarni yuklab bo‘lmadi",
+            "noTransactionsFound": "Bu sahifada tranzaksiyalar topilmadi.",
+            "transactionCount": "ta tranzaksiya",
+            "page": "Sahifa",
+            "of": "/",
+            "edit": "Tahrirlash",
+            "delete": "O‘chirish",
+            "deleteConfirm": "Bu tranzaksiya o‘chirilsinmi? Bu amalni ortga qaytarib bo‘lmaydi.",
+            "transactionDeleted": "Tranzaksiya o‘chirildi.",
+            "transactionCreated": "Tranzaksiya muvaffaqiyatli yaratildi.",
+            "transactionUpdated": "Tranzaksiya muvaffaqiyatli yangilandi.",
+            "createAccountCategoryFirst": "Avval hisob va mos kategoriyani yarating.",
+            "sessionExpired": "Sessiya tugadi. Qaytadan tizimga kiring.",
+            "apiError": "API xatosi",
+            "requestFailed": "So‘rov bajarilmadi",
+            "loading": "Yuklanmoqda...",
+            "accountsError": "Hisoblarni yuklab bo‘lmadi",
+            "categoriesError": "Kategoriyalarni yuklab bo‘lmadi"
+        }
+    };
+
+    let currentLanguage = localStorage.getItem("finora_language") || "en";
+
+    if (!translations[currentLanguage]) {
+        currentLanguage = "en";
+    }
+
+    function t(key) {
+        return translations[currentLanguage]?.[key]
+            ?? translations.en[key]
+            ?? key;
+    }
+
+    function translateDOM(root = document) {
+        document.documentElement.lang = currentLanguage;
+
+        root.querySelectorAll("[data-i18n]").forEach((element) => {
+            element.textContent = t(element.dataset.i18n);
+        });
+
+        root.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
+            element.placeholder = t(element.dataset.i18nPlaceholder);
+        });
+
+        root.querySelectorAll("[data-i18n-title]").forEach((element) => {
+            element.title = t(element.dataset.i18nTitle);
+        });
+
+        root.querySelectorAll("[data-i18n-aria-label]").forEach((element) => {
+            element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
+        });
+    }
+
+    async function initLanguage() {
+        const accessToken = localStorage.getItem("access_token");
+
+        if (accessToken) {
+            try {
+                const response = await fetch("/api/auth/profile/", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        Accept: "application/json"
+                    }
+                });
+
+                if (response.ok) {
+                    const profile = await response.json();
+
+                    if (["en", "ru", "uz"].includes(profile.language)) {
+                        currentLanguage = profile.language;
+                        localStorage.setItem("finora_language", currentLanguage);
+                    }
+                }
+            } catch (error) {
+                console.error("Could not load language preference:", error);
+            }
+        }
+
+        translateDOM();
+        return currentLanguage;
+    }
+
+    window.FinoraPageI18n = {
+        t,
+        initLanguage,
+        translateDOM,
+        getLanguage: () => currentLanguage
+    };
+})();
+
+const t = (key) => window.FinoraPageI18n.t(key);
+
 const API = "/api";
 const token = () => localStorage.getItem("access_token");
-const t = (key) => window.FinoraI18n
-    ? window.FinoraI18n.t(key)
-    : key;
 
 let accounts = [];
 let categories = [];
@@ -72,8 +309,8 @@ function setMessage(element, text, isError = false) {
 
 function formatMoney(value) {
     return `${Number(value).toLocaleString(
-        window.FinoraI18n?.getLanguage() === "ru" ? "ru-RU" :
-        window.FinoraI18n?.getLanguage() === "uz" ? "uz-UZ" : "en-US",
+        window.FinoraPageI18n?.getLanguage() === "ru" ? "ru-RU" :
+        window.FinoraPageI18n?.getLanguage() === "uz" ? "uz-UZ" : "en-US",
         { maximumFractionDigits: 2 }
     )} UZS`;
 }
@@ -409,7 +646,7 @@ async function init() {
         return;
     }
 
-    await window.FinoraI18n?.init();
+    await window.FinoraPageI18n.initLanguage();
 
     $("date").value = today();
 
@@ -432,11 +669,15 @@ async function init() {
         }
     });
 
-    $("logout-button").addEventListener("click", () => {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        window.location.href = "/";
-    });
+    const logoutButton = $("logout-button");
+
+    if (logoutButton) {
+        logoutButton.addEventListener("click", () => {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            window.location.href = "/";
+        });
+    }
 
     await loadAccountsAndCategories();
     await loadTransactions();

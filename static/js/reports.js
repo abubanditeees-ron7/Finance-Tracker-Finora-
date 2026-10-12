@@ -9,7 +9,6 @@
             dashboard: "Dashboard",
             transactions: "Transactions",
             accountsCategories: "Accounts & Categories",
-            signOut: "Sign out",
             heading: "Financial reports",
             description: "Understand your income, expenses and spending habits.",
             reportingPeriod: "Reporting period",
@@ -36,7 +35,6 @@
             loadReportError: "Could not load the report.",
             noTransactions: "No transactions in this period.",
             percentOfTotal: "% of category total",
-            requestFailed: "Request failed",
             apiError: "The server returned an API error.",
             pageTitle: "Financial Reports — Finora"
         },
@@ -45,7 +43,6 @@
             dashboard: "Главная",
             transactions: "Транзакции",
             accountsCategories: "Счета и категории",
-            signOut: "Выйти",
             heading: "Финансовые отчёты",
             description: "Анализируйте доходы, расходы и свои финансовые привычки.",
             reportingPeriod: "Отчётный период",
@@ -72,7 +69,6 @@
             loadReportError: "Не удалось загрузить отчёт.",
             noTransactions: "За этот период транзакций нет.",
             percentOfTotal: "% от общей суммы категории",
-            requestFailed: "Ошибка запроса",
             apiError: "Сервер вернул ошибку API.",
             pageTitle: "Финансовые отчёты — Finora"
         },
@@ -81,7 +77,6 @@
             dashboard: "Bosh sahifa",
             transactions: "Tranzaksiyalar",
             accountsCategories: "Hisoblar va kategoriyalar",
-            signOut: "Chiqish",
             heading: "Moliyaviy hisobotlar",
             description: "Daromadlar, xarajatlar va moliyaviy odatlaringizni tahlil qiling.",
             reportingPeriod: "Hisobot davri",
@@ -108,7 +103,6 @@
             loadReportError: "Hisobotni yuklab bo‘lmadi.",
             noTransactions: "Bu davrda tranzaksiyalar mavjud emas.",
             percentOfTotal: "% — kategoriya umumiy summasidan",
-            requestFailed: "So‘rov xatosi",
             apiError: "Server API xatosini qaytardi.",
             pageTitle: "Moliyaviy hisobotlar — Finora"
         }
@@ -121,23 +115,40 @@
     }
 
     function translatePage() {
+        const dictionary = translations[currentLanguage] || translations.en;
+
         document.documentElement.lang = currentLanguage;
 
         document.querySelectorAll("[data-report-i18n]").forEach((element) => {
             const key = element.dataset.reportI18n;
-            if (translations[currentLanguage][key]) {
-                element.textContent = t(key);
+
+            if (dictionary[key]) {
+                element.textContent = dictionary[key];
             }
         });
 
         document.title = t("pageTitle");
+
+        const submitButton = $("report-submit");
+        if (submitButton && !submitButton.disabled) {
+            submitButton.textContent = t("generateReport");
+        }
     }
 
     async function loadLanguage() {
+        // Сначала берём язык, сохранённый в Settings.
+        const savedLanguage = localStorage.getItem("finora_language");
+
+        if (["en", "ru", "uz"].includes(savedLanguage)) {
+            currentLanguage = savedLanguage;
+        }
+
+        // Сразу переводим страницу, не ожидая ответа API.
+        translatePage();
+
         const token = localStorage.getItem("access_token");
 
         if (!token) {
-            translatePage();
             return;
         }
 
@@ -156,18 +167,25 @@
                 return;
             }
 
-            if (response.ok) {
-                const profile = await response.json();
+            if (!response.ok) {
+                console.error(
+                    "Could not load profile language. HTTP status:",
+                    response.status
+                );
+                return;
+            }
 
-                if (["en", "ru", "uz"].includes(profile.language)) {
-                    currentLanguage = profile.language;
-                }
+            const profile = await response.json();
+
+            if (["en", "ru", "uz"].includes(profile.language)) {
+                currentLanguage = profile.language;
+                localStorage.setItem("finora_language", profile.language);
+                translatePage();
             }
         } catch (error) {
             console.error("Could not load language preference:", error);
+            // Сохранённый язык уже применён, поэтому страница остаётся переведённой.
         }
-
-        translatePage();
     }
 
     function formatMoney(value) {
@@ -185,8 +203,13 @@
 
     function showMessage(message, isError = false) {
         const element = $("report-message");
+
+        if (!element) return;
+
         element.textContent = message;
-        element.className = `message ${isError ? "error" : "success"}`;
+        element.className = message
+            ? `message ${isError ? "error" : "success"}`
+            : "message";
     }
 
     async function loadReport() {
@@ -224,12 +247,15 @@
         showMessage("");
 
         try {
-            const response = await fetch(`/api/reports/?${params.toString()}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json"
+            const response = await fetch(
+                `/api/reports/?${params.toString()}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json"
+                    }
                 }
-            });
+            );
 
             if (response.status === 401) {
                 localStorage.removeItem("access_token");
@@ -241,7 +267,7 @@
             const data = await response.json().catch(() => null);
 
             if (!response.ok) {
-                console.error("Report API error:", data);
+                console.error("Report API error:", data, response.status);
                 throw new Error(`${t("apiError")} (${response.status})`);
             }
 
@@ -259,10 +285,9 @@
             showMessage(t("reportSuccess"));
         } catch (error) {
             console.error("Could not load report:", error);
-            showMessage(
-                error.message || t("loadReportError"),
-                true
-            );
+
+            // Ошибка остаётся в Console, но не показывается под фильтрами.
+            showMessage("");
         } finally {
             button.disabled = false;
             button.textContent = t("generateReport");
@@ -333,21 +358,28 @@
     }
 
     async function initReports() {
-        $("period").addEventListener("change", updateDateFields);
+        const periodElement = $("period");
+        const formElement = $("report-form");
 
-        $("report-form").addEventListener("submit", (event) => {
-            event.preventDefault();
-            loadReport();
+        console.log("Reports JS initialized", {
+            periodFound: Boolean(periodElement),
+            formFound: Boolean(formElement),
+            language: localStorage.getItem("finora_language")
         });
 
-        $("logout-button").addEventListener("click", () => {
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("refresh_token");
-            window.location.href = "/";
-        });
+        if (periodElement) {
+            periodElement.addEventListener("change", updateDateFields);
+        }
+
+        if (formElement) {
+            formElement.addEventListener("submit", (event) => {
+                event.preventDefault();
+                loadReport();
+            });
+        }
 
         await loadLanguage();
-
+        translatePage();
         updateDateFields();
         await loadReport();
     }

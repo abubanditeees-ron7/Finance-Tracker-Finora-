@@ -14,11 +14,14 @@ from .serializers import (
     CategorySerializer,
     FinancialAccountSerializer,
     TransactionSerializer,
+    FinanceReportSerializer,
+    FinanceReportQuerySerializer,
 )
-from .report_serializers import FinanceReportSerializer
-from .report_services import build_finance_report
 
-from drf_spectacular.utils import extend_schema_view, extend_schema
+from drf_spectacular.utils import( 
+    extend_schema_view, 
+    extend_schema,
+)
 
 
 class OwnedListCreateView(GenericAPIView):
@@ -157,23 +160,18 @@ class TransactionDetailView(OwnedDetailView):
     serializer_class = TransactionSerializer
 
 
+
 class FinanceReportView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = FinanceReportSerializer
 
     def get(self, request):
-        period = request.query_params.get("period", "month")
-        date_from = request.query_params.get("date_from")
-        date_to = request.query_params.get("date_to")
-
-        report = build_finance_report(
-            user=request.user,
-            period=period,
-            date_from=date_from,
-            date_to=date_to,
+        query_serializer = FinanceReportQuerySerializer(
+            data=request.query_params,
         )
+        query_serializer.is_valid(raise_exception=True)
 
-        serializer = FinanceReportSerializer(data=report)
-        serializer.is_valid(raise_exception=True)
+        report = query_serializer.build_report(request.user)
 
-        return Response(serializer.validated_data)
+        return Response(
+            FinanceReportSerializer(report).data
+        )

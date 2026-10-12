@@ -11,8 +11,13 @@ from .serializers import (
     RegisterSerializer,
     VerifyEmailSerializer,
     UserProfileSerializer,
+    PasswordChangeSerializer,
+    EmailChangeRequestSerializer,
+    EmailChangeConfirmSerializer,
 )
 from .models import UserProfile
+
+from django.shortcuts import render
 
 
 class RegisterView(APIView):
@@ -90,3 +95,60 @@ class UserProfileView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+
+
+class PasswordChangeView(GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = PasswordChangeSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            {"detail": "Password changed successfully."},
+            status=status.HTTP_200_OK,
+        )
+
+
+def login_page(request):
+    return render(request, "login.html")
+
+
+def register_page(request):
+    return render(request, "register.html")
+
+
+class EmailChangeRequestView(GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = EmailChangeRequestSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            {"detail": "Verification code sent to the new email."},
+            status=status.HTTP_200_OK,
+        )
+
+
+class EmailChangeConfirmView(GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = EmailChangeConfirmSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        return Response(
+            {
+                "detail": "Email changed successfully.",
+                "email": user.email,
+            },
+            status=status.HTTP_200_OK,
+        )

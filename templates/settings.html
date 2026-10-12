@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,12 +6,14 @@
     <title>Settings — Finora</title>
     <style>
         * { box-sizing: border-box; }
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
             background: #f4f7fb;
             color: #182230;
         }
+
         header {
             display: flex;
             justify-content: space-between;
@@ -23,83 +24,256 @@
             background: white;
             border-bottom: 1px solid #e7ebf0;
         }
+
         .logo {
             color: #2563eb;
             font-size: 25px;
             font-weight: 800;
             text-decoration: none;
         }
-        nav { display: flex; gap: 10px; flex-wrap: wrap; }
-        a { text-decoration: none; }
-        button, select {
-            padding: 11px 14px;
-            border-radius: 9px;
-            font: inherit;
+
+        nav { display: flex; gap: 10px; }
+
+        main {
+            max-width: 800px;
+            margin: 35px auto;
+            padding: 0 20px 40px;
         }
-        button { border: 0; cursor: pointer; }
-        .primary { background: #2563eb; color: white; }
-        .secondary { background: #eef2f7; color: #344054; }
-        main { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+
         .panel {
             background: white;
             border: 1px solid #e7ebf0;
             border-radius: 16px;
-            padding: 28px;
-            margin-top: 24px;
+            padding: 26px;
+            margin-top: 22px;
         }
+
         .muted { color: #667085; line-height: 1.6; }
+        .profile-row { margin: 18px 0; overflow-wrap: anywhere; }
+        .profile-row strong { display: block; margin-bottom: 5px; }
+
         label {
             display: block;
             font-weight: 700;
-            margin: 20px 0 8px;
+            margin: 16px 0 7px;
         }
-        select { width: 100%; border: 1px solid #d0d5dd; background: white; }
-        .message { margin-top: 15px; white-space: pre-wrap; }
+
+        input, select {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #d0d5dd;
+            border-radius: 9px;
+            font: inherit;
+            background: white;
+        }
+
+        button {
+            border: 0;
+            border-radius: 9px;
+            padding: 11px 15px;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        button:disabled { opacity: .6; cursor: wait; }
+        .primary { background: #2563eb; color: white; }
+        .secondary { background: #eef2f7; color: #344054; }
+        .danger { background: #fee4e2; color: #b42318; }
+        .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+        .hidden { display: none !important; }
+
+        .message {
+            margin-top: 15px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
         .error { color: #b42318; }
         .success { color: #15803d; }
+
+        #avatar-preview {
+            display: block;
+            width: 92px;
+            height: 92px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #eef2f7;
+            margin: 12px 0;
+        }
+
+        @media (max-width: 560px) {
+            .panel { padding: 19px; }
+            header { padding: 18px 5%; }
+        }
     </style>
 </head>
 <body>
 <header>
     <a class="logo" href="/">Finora.</a>
     <nav>
-        <a class="secondary" href="/dashboard/">Dashboard</a>
-        <button class="secondary" id="logout-button">Sign out</button>
+        <a class="secondary" id="dashboard-link" href="/dashboard/">Dashboard</a>
+        <button class="secondary" id="logout-button" type="button">Sign out</button>
     </nav>
 </header>
 
 <main>
     <h1 id="page-title">Settings</h1>
-    <p class="muted" id="page-description">
-        Manage your account preferences.
-    </p>
+    <p class="muted" id="page-description">Manage your account and profile.</p>
 
     <section class="panel">
         <h2 id="profile-heading">Your profile</h2>
-        <p class="muted">
-            <strong id="username-label">Username:</strong>
-            <span id="username">Loading...</span>
-        </p>
-        <p class="muted">
-            <strong id="email-label">Email:</strong>
-            <span id="email">Loading...</span>
+
+        <div id="profile-view">
+            <img id="profile-avatar" class="hidden" alt="Profile photo">
+
+            <div class="profile-row">
+                <strong id="username-label">Username</strong>
+                <span id="username-value">Loading...</span>
+            </div>
+
+            <div class="profile-row">
+                <strong id="email-label">Email</strong>
+                <span id="email-value">Loading...</span>
+            </div>
+
+            <div class="profile-row">
+                <strong id="phone-label">Phone</strong>
+                <span id="phone-value">—</span>
+            </div>
+
+            <div class="profile-row">
+                <strong id="language-label">Interface language</strong>
+                <span id="language-value">English</span>
+            </div>
+
+            <div class="actions">
+                <button class="primary" id="edit-profile-button" type="button">
+                    Edit profile
+                </button>
+                <button class="secondary" id="change-email-button" type="button">
+                    Change email
+                </button>
+            </div>
+        </div>
+
+        <form id="profile-form" class="hidden">
+            <label for="username-input" id="username-input-label">Username</label>
+            <input id="username-input" name="username" maxlength="150" required>
+
+            <label for="phone-input" id="phone-input-label">Phone (optional)</label>
+            <input
+                id="phone-input"
+                name="phone"
+                type="tel"
+                placeholder="+998901234567"
+                pattern="^\+998[0-9]{9}$"
+            >
+
+            <label for="language-input" id="language-input-label">Interface language</label>
+            <select id="language-input" name="language">
+                <option value="en">English</option>
+                <option value="ru">Русский</option>
+                <option value="uz">O‘zbekcha</option>
+            </select>
+
+            <label for="avatar-input" id="avatar-input-label">Profile photo</label>
+            <input id="avatar-input" name="avatar" type="file" accept="image/*">
+            <img id="avatar-preview" class="hidden" alt="Selected profile photo">
+
+            <div class="actions">
+                <button class="primary" id="save-profile-button" type="submit">
+                    Save changes
+                </button>
+                <button class="secondary" id="cancel-edit-button" type="button">
+                    Cancel
+                </button>
+            </div>
+        </form>
+
+        <div id="profile-message" class="message" role="status"></div>
+    </section>
+
+    <section id="email-panel" class="panel hidden">
+        <h2 id="email-heading">Change email</h2>
+        <p class="muted" id="email-description">
+            A verification code will be sent to your new email address.
         </p>
 
-        <label for="language" id="language-label">Interface language</label>
-        <select id="language">
-            <option value="en">English</option>
-            <option value="ru">Русский</option>
-            <option value="uz">O‘zbekcha</option>
-        </select>
+        <form id="email-request-form">
+            <label for="new-email-input" id="new-email-label">New email</label>
+            <input id="new-email-input" type="email" autocomplete="email" required>
 
-        <p class="muted" id="language-help">
-            Choose the language you prefer to use on Finora.
-        </p>
+            <label for="email-current-password" id="email-password-label">
+                Current password
+            </label>
+            <input
+                id="email-current-password"
+                type="password"
+                autocomplete="current-password"
+                required
+            >
 
-        <button class="primary" id="save-language">
-            Save settings
-        </button>
-        <div id="message" class="message" role="status"></div>
+            <div class="actions">
+                <button class="primary" id="send-email-code-button" type="submit">
+                    Send verification code
+                </button>
+                <button class="secondary" id="cancel-email-button" type="button">
+                    Cancel
+                </button>
+            </div>
+        </form>
+
+        <form id="email-confirm-form" class="hidden">
+            <label for="email-code-input" id="email-code-label">
+                Verification code
+            </label>
+            <input
+                id="email-code-input"
+                inputmode="numeric"
+                pattern="[0-9]{6}"
+                maxlength="6"
+                autocomplete="one-time-code"
+                required
+            >
+
+            <div class="actions">
+                <button class="primary" id="confirm-email-button" type="submit">
+                    Confirm new email
+                </button>
+                <button class="secondary" id="back-email-button" type="button">
+                    Back
+                </button>
+            </div>
+        </form>
+
+        <div id="email-message" class="message" role="status"></div>
+    </section>
+
+    <section class="panel">
+        <h2 id="password-heading">Change password</h2>
+
+        <form id="password-form">
+            <label for="current-password" id="current-password-label">
+                Current password
+            </label>
+            <input id="current-password" type="password" autocomplete="current-password" required>
+
+            <label for="new-password" id="new-password-label">New password</label>
+            <input id="new-password" type="password" autocomplete="new-password" required>
+
+            <label for="confirm-password" id="confirm-password-label">
+                Confirm new password
+            </label>
+            <input id="confirm-password" type="password" autocomplete="new-password" required>
+
+            <div class="actions">
+                <button class="primary" id="change-password-button" type="submit">
+                    Change password
+                </button>
+            </div>
+        </form>
+
+        <div id="password-message" class="message" role="status"></div>
     </section>
 </main>
 

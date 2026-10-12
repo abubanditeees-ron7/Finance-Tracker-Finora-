@@ -1,18 +1,160 @@
+(() => {
+    const translations = {
+    "en": {
+        "dashboardTitle": "Personal Finance Dashboard",
+        "dashboardDescription": "Track your money. Understand your spending. Plan ahead.",
+        "totalBalance": "Total balance",
+        "totalIncome": "Total income",
+        "totalExpenses": "Total expenses",
+        "recentTransactions": "Recent transactions",
+        "latestTransactions": "Your latest income and expenses",
+        "manageApi": "Manage via API",
+        "loadingTransactions": "Loading transactions...",
+        "noTransactions": "No transactions yet. Add your first transaction through the API.",
+        "apiDocumentation": "API and documentation",
+        "apiDescription": "Backend documentation and API testing.",
+        "openSwagger": "Open Swagger",
+        "transactions": "Transactions",
+        "reports": "Financial reports",
+        "accountsCategories": "Accounts & Categories",
+        "settings": "Settings",
+        "signedIn": "Signed in",
+        "signOut": "Sign out",
+        "sessionExpired": "Session expired. Please sign in again.",
+        "apiError": "API error",
+        "loading": "Loading..."
+    },
+    "ru": {
+        "dashboardTitle": "Панель личных финансов",
+        "dashboardDescription": "Следите за деньгами, анализируйте расходы и планируйте бюджет.",
+        "totalBalance": "Общий баланс",
+        "totalIncome": "Общий доход",
+        "totalExpenses": "Общие расходы",
+        "recentTransactions": "Последние транзакции",
+        "latestTransactions": "Ваши последние доходы и расходы",
+        "manageApi": "Управление через API",
+        "loadingTransactions": "Загрузка транзакций...",
+        "noTransactions": "Транзакций пока нет. Добавьте первую через API.",
+        "apiDocumentation": "API и документация",
+        "apiDescription": "Документация backend и тестирование API.",
+        "openSwagger": "Открыть Swagger",
+        "transactions": "Транзакции",
+        "reports": "Финансовые отчёты",
+        "accountsCategories": "Счета и категории",
+        "settings": "Настройки",
+        "signedIn": "Вы вошли в аккаунт",
+        "signOut": "Выйти",
+        "sessionExpired": "Сессия истекла. Войдите в аккаунт снова.",
+        "apiError": "Ошибка API",
+        "loading": "Загрузка..."
+    },
+    "uz": {
+        "dashboardTitle": "Shaxsiy moliya paneli",
+        "dashboardDescription": "Pul mablag‘laringizni kuzating, xarajatlarni tahlil qiling va reja tuzing.",
+        "totalBalance": "Umumiy balans",
+        "totalIncome": "Umumiy daromad",
+        "totalExpenses": "Umumiy xarajatlar",
+        "recentTransactions": "Oxirgi tranzaksiyalar",
+        "latestTransactions": "Oxirgi daromad va xarajatlaringiz",
+        "manageApi": "API orqali boshqarish",
+        "loadingTransactions": "Tranzaksiyalar yuklanmoqda...",
+        "noTransactions": "Hozircha tranzaksiyalar yo‘q. Birinchi tranzaksiyani API orqali qo‘shing.",
+        "apiDocumentation": "API va hujjatlar",
+        "apiDescription": "Backend hujjatlari va API sinovlari.",
+        "openSwagger": "Swagger-ni ochish",
+        "transactions": "Tranzaksiyalar",
+        "reports": "Moliyaviy hisobotlar",
+        "accountsCategories": "Hisoblar va kategoriyalar",
+        "settings": "Sozlamalar",
+        "signedIn": "Tizimga kirilgan",
+        "signOut": "Chiqish",
+        "sessionExpired": "Sessiya tugadi. Qaytadan tizimga kiring.",
+        "apiError": "API xatosi",
+        "loading": "Yuklanmoqda..."
+    }
+};
+    let currentLanguage = localStorage.getItem("finora_language") || "en";
+
+    if (!translations[currentLanguage]) {
+        currentLanguage = "en";
+    }
+
+    function t(key) {
+        return translations[currentLanguage]?.[key]
+            ?? translations.en[key]
+            ?? key;
+    }
+
+    function translateDOM(root = document) {
+        document.documentElement.lang = currentLanguage;
+
+        root.querySelectorAll("[data-i18n]").forEach((element) => {
+            element.textContent = t(element.dataset.i18n);
+        });
+
+        root.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
+            element.placeholder = t(element.dataset.i18nPlaceholder);
+        });
+
+        root.querySelectorAll("[data-i18n-title]").forEach((element) => {
+            element.title = t(element.dataset.i18nTitle);
+        });
+
+        root.querySelectorAll("[data-i18n-aria-label]").forEach((element) => {
+            element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
+        });
+    }
+
+    async function initLanguage() {
+        const accessToken = localStorage.getItem("access_token");
+
+        if (accessToken) {
+            try {
+                const response = await fetch("/api/auth/profile/", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        Accept: "application/json"
+                    }
+                });
+
+                if (response.ok) {
+                    const profile = await response.json();
+
+                    if (["en", "ru", "uz"].includes(profile.language)) {
+                        currentLanguage = profile.language;
+                        localStorage.setItem("finora_language", currentLanguage);
+                    }
+                }
+            } catch (error) {
+                console.error("Could not load language preference:", error);
+            }
+        }
+
+        translateDOM();
+        return currentLanguage;
+    }
+
+    window.FinoraPageI18n = {
+        t,
+        initLanguage,
+        translateDOM,
+        getLanguage: () => currentLanguage
+    };
+})();
+
+const t = (key) => window.FinoraPageI18n.t(key);
 
 const API_BASE = "/api";
 
 const $ = (id) => document.getElementById(id);
 
-const t = (key) => window.FinoraI18n
-    ? window.FinoraI18n.t(key)
-    : key;
 
 function getAccessToken() {
     return localStorage.getItem("access_token");
 }
 
 function formatUZS(value) {
-    const language = window.FinoraI18n?.getLanguage() || "en";
+    const language = window.FinoraPageI18n?.getLanguage() || "en";
 
     const locale = {
         en: "en-US",
@@ -153,9 +295,9 @@ function renderTransactions(data) {
 }
 
 async function loadDashboard() {
-    setText("balance", t("loading"));
-    setText("income", t("loading"));
-    setText("expense", t("loading"));
+    setText("balance", "—");
+    setText("income", "—");
+    setText("expense", "—");
 
     const container = $("transactions-list");
 
@@ -164,36 +306,40 @@ async function loadDashboard() {
     }
 
     try {
+        const transactions = await apiRequest("/transactions/");
+        const list = getList(transactions);
+
+        renderTransactions(transactions);
+
+        // Если транзакций нет, оставляем прочерк
+        // и не запрашиваем отчёт для пустого списка.
+        if (list.length === 0) {
+            setText("balance", "—");
+            setText("income", "—");
+            setText("expense", "—");
+            return;
+        }
+
         const report = await apiRequest("/reports/?period=month");
 
         setText("balance", formatUZS(report.balance));
         setText("income", formatUZS(report.total_income));
         setText("expense", formatUZS(report.total_expense));
     } catch (error) {
-        setText("balance", t("apiError"));
-        setText("income", t("apiError"));
-        setText("expense", t("apiError"));
+        console.error("Dashboard loading error:", error);
 
-        console.error("Dashboard report error:", error);
-    }
+        // Не показываем «Ошибка API» в финансовых карточках.
+        // Ошибка остаётся в консоли для диагностики.
+        setText("balance", "—");
+        setText("income", "—");
+        setText("expense", "—");
 
-    try {
-        const transactions = await apiRequest("/transactions/");
-        renderTransactions(transactions);
-    } catch (error) {
-        if (container) {
-            container.textContent = `${t("apiError")}: ${error.message}`;
+        if (container && container.textContent === t("loadingTransactions")) {
+            container.textContent = t("noTransactions");
         }
-
-        console.error("Transactions error:", error);
     }
 }
 
-function logout() {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    window.location.href = "/";
-}
 
 async function initDashboard() {
     if (!getAccessToken()) {
@@ -201,15 +347,7 @@ async function initDashboard() {
         return;
     }
 
-    if (window.FinoraI18n) {
-        await window.FinoraI18n.init();
-    }
-
-    const logoutButton = $("logout-button");
-
-    if (logoutButton) {
-        logoutButton.addEventListener("click", logout);
-    }
+    await window.FinoraPageI18n.initLanguage();
 
     await loadDashboard();
 }
