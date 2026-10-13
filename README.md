@@ -1,64 +1,83 @@
 # Finora — Personal Finance Tracker
 
-Finora is a personal finance tracking web application built with Django and Django REST Framework. It helps users manage their income, expenses, financial accounts, categories, and financial reports.
+Finora is a Django web application for tracking personal income and expenses, managing financial accounts and categories, and viewing financial reports. The interface supports English, Russian, and Uzbek. Amounts are tracked in Uzbek soum (UZS).
+
+## Live application
+
+- **Website:** http://142.44.160.226/
+- **Django administration:** http://142.44.160.226/admin/
+- **Swagger API documentation:** http://142.44.160.226/api/docs/
+- **ReDoc API documentation:** http://142.44.160.226/api/redoc/
+- **OpenAPI schema:** http://142.44.160.226/api/schema/
+
+The deployment currently uses the server IP over HTTP. The browser may show “Not secure” because HTTPS and a domain have not been configured.
 
 ## Features
 
-- User registration and email verification
-- JWT authentication and token refresh
-- User profile management and password changes
-- Email change with verification
-- Multilingual interface: English, Russian, and Uzbek
-- Income and expense tracking in Uzbek soum (UZS)
-- Personal accounts and transaction categories
-- Financial reports and dashboard statistics
-- API documentation with Swagger UI and OpenAPI
-- PostgreSQL database
-- Django administration panel
+- Registration and email verification
+- JWT login and refresh tokens
+- User profile editing, password change, and email change with verification
+- Income and expense transactions
+- Financial accounts and transaction categories
+- Dashboard and date-range financial reports
+- English, Russian, and Uzbek interface
+- Django admin site
+- Swagger, ReDoc, and an importable Postman collection
 
-## Tech Stack
+## Technology stack
 
-- Python
+- Python 3.11+
 - Django 5.2
 - Django REST Framework
 - PostgreSQL
 - Simple JWT
-- drf-spectacular
-- HTML, CSS, and JavaScript
-- Gunicorn
+- drf-spectacular (OpenAPI, Swagger UI, ReDoc)
+- Gunicorn and Nginx
 - WhiteNoise
+- HTML, CSS, JavaScript
 
-## Requirements
+## Project structure
 
-- Python 3.11 or a compatible Python version
-- PostgreSQL
-- Git
-
-## Installation
-
-### 1. Clone the repository
-
-```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
-cd YOUR_PROJECT_DIRECTORY
+```text
+.
+├── accounts/                 # Users, registration, email verification and profile API
+├── config/                   # Django settings and project URLs
+├── finance/                  # Accounts, categories, transactions and reports
+├── postman/
+│   └── personal-finance-tracker.postman_collection.json
+├── static/                   # CSS and JavaScript
+├── templates/                # HTML pages
+├── schema.yml                # OpenAPI schema file
+├── manage.py
+├── requirements.txt
+└── README.md
 ```
 
-Replace the placeholders with your actual GitHub repository URL and project directory.
+## Run locally
 
-### 2. Create a virtual environment
-
-Windows:
+### 1. Get the source code
 
 ```bash
-python -m venv venv
-venv\Scripts\activate
+git clone <YOUR_GITHUB_REPOSITORY_URL>
+cd <YOUR_PROJECT_DIRECTORY>
 ```
 
-Linux or macOS:
+Replace the placeholders with the actual repository URL and folder name.
+
+### 2. Create and activate a virtual environment
+
+**Windows (PowerShell):**
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+**Linux/macOS:**
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
 ### 3. Install dependencies
@@ -68,129 +87,164 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 4. Configure environment variables
+### 4. Create the `.env` file
 
-Create a local `.env` file in the project root, next to `manage.py`.
+Create a file named `.env` in the project root, in the same directory as `manage.py`. Copy the following template into `.env`, then replace the example values with your own. **Do not commit `.env` to GitHub.**
 
-Use `.env.example` as a template. Copy its variables into `.env` and replace the example values with your own configuration.
+```dotenv
+# Django
+SECRET_KEY=REPLACE_WITH_A_UNIQUE_RANDOM_SECRET_KEY_AT_LEAST_50_CHARACTERS_LONG
+DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost
 
-Configure the following variables:
+# PostgreSQL — create this database and user before running migrations
+DB_ENGINE=postgres
+DB_NAME=finora_db
+DB_USER=finora_user
+DB_PASSWORD=REPLACE_WITH_YOUR_DATABASE_PASSWORD
+DB_HOST=127.0.0.1
+DB_PORT=5432
 
-- `SECRET_KEY` — a unique, secret Django key of at least 50 characters.
-- `DEBUG` — use `True` for local development and `False` for production.
-- `ALLOWED_HOSTS` — allowed hostnames separated by commas.
-- `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT` — PostgreSQL connection settings.
-- `EMAIL_BACKEND`, `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL` — email configuration.
+# Email — SMTP configuration for actual email delivery
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=YOUR_GMAIL_ADDRESS@gmail.com
+EMAIL_HOST_PASSWORD=YOUR_GMAIL_APP_PASSWORD
+DEFAULT_FROM_EMAIL="Finora <YOUR_GMAIL_ADDRESS@gmail.com>"
+```
 
-For local development, the console email backend can be used to inspect outgoing messages in the terminal. Configure an SMTP provider when actual email delivery is required.
+Before starting Django:
 
-**Security:** Never commit `.env` or publish real credentials, email passwords, database passwords, or secret keys.
+- Generate a unique Django `SECRET_KEY` of at least 50 characters; do not leave the placeholder.
+- Replace the database name, username, and password with credentials for your PostgreSQL database.
+- For Gmail, use an **App Password** where supported, not your normal Gmail password. Keep it private.
+- `EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend` sends email through SMTP. `django.core.mail.backends.console.EmailBackend` only prints email content in the server terminal and does **not** deliver messages to an inbox.
+- `DEBUG=True` is for local development only. For production, use `DEBUG=False` after configuring HTTPS and the required secure-cookie settings. The current IP-only deployment uses HTTP, so do not copy production cookie settings blindly into a local HTTP setup.
+- Add any hostname or IP used to open the site to `ALLOWED_HOSTS`.
+
+The project loads `.env` automatically using `python-dotenv`. The `.env` file is intentionally not included in this repository package because it contains private settings.
 
 ### 5. Create the PostgreSQL database
 
-Create a PostgreSQL database and a database user, then configure the connection details in `.env`.
+Create the database and database user in PostgreSQL, and grant the user access to the database. Ensure the values match `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, and `DB_PORT` in `.env`.
 
-Ensure that the database user has the necessary permissions on the project database.
-
-### 6. Apply database migrations
+### 6. Apply migrations and create an administrator
 
 ```bash
 python manage.py migrate
-```
-
-### 7. Create an administrator
-
-```bash
 python manage.py createsuperuser
 ```
 
-### 8. Run the development server
+### 7. Run the development server
 
 ```bash
 python manage.py runserver
 ```
 
-Open the application at:
+Open http://127.0.0.1:8000/.
 
-`http://127.0.0.1:8000/`
+## Main pages
 
-## Main Pages
+| Page | Local URL | Deployed URL |
+|---|---|---|
+| Home | `/` | http://142.44.160.226/ |
+| Registration | `/register/` | http://142.44.160.226/register/ |
+| Login | `/login/` | http://142.44.160.226/login/ |
+| Dashboard | `/dashboard/` | http://142.44.160.226/dashboard/ |
+| Transactions | `/transactions/` | http://142.44.160.226/transactions/ |
+| Accounts and categories | `/manage/` | http://142.44.160.226/manage/ |
+| Reports | `/reports/` | http://142.44.160.226/reports/ |
+| Settings | `/settings/` | http://142.44.160.226/settings/ |
+| Django admin | `/admin/` | http://142.44.160.226/admin/ |
 
-| Page | URL |
+## API documentation
+
+| Documentation | Deployed URL |
 |---|---|
-| Home | `/` |
-| Registration | `/register/` |
-| Login | `/login/` |
-| Dashboard | `/dashboard/` |
-| Transactions | `/transactions/` |
-| Accounts and Categories | `/manage/` |
-| Reports | `/reports/` |
-| Settings | `/settings/` |
-| Django Admin | `/admin/` |
+| Swagger UI | http://142.44.160.226/api/docs/ |
+| ReDoc | http://142.44.160.226/api/redoc/ |
+| OpenAPI schema | http://142.44.160.226/api/schema/ |
 
-## API Documentation
-
-The project provides OpenAPI documentation through drf-spectacular.
-
-| Resource | URL |
-|---|---|
-| Swagger UI | `/api/docs/` |
-| ReDoc | `/api/redoc/` |
-| OpenAPI schema | `/api/schema/` |
-
-### Authentication Endpoints
+### Authentication endpoints
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| POST | `/api/auth/register/` | Register a user |
-| POST | `/api/auth/verify-email/` | Verify an email address |
-| POST | `/api/auth/login/` | Authenticate a user |
-| POST | `/api/auth/token/refresh/` | Refresh an access token |
-| GET/PATCH | `/api/auth/profile/` | Retrieve or update the profile |
-| POST | `/api/auth/profile/password/` | Change password |
-| POST | `/api/auth/profile/email/request/` | Request an email change |
-| POST | `/api/auth/profile/email/confirm/` | Confirm an email change |
+| `POST` | `/api/auth/register/` | Register an account |
+| `POST` | `/api/auth/verify-email/` | Verify email using the code sent to the address |
+| `POST` | `/api/auth/login/` | Obtain JWT access and refresh tokens |
+| `POST` | `/api/auth/token/refresh/` | Refresh an access token |
+| `GET`, `PATCH` | `/api/auth/profile/` | Read or update the profile |
+| `POST` | `/api/auth/profile/password/` | Change password |
+| `POST` | `/api/auth/profile/email/request/` | Request an email change |
+| `POST` | `/api/auth/profile/email/confirm/` | Confirm the new email address |
 
-Protected API requests use JWT bearer authentication:
+### Finance endpoints
+
+| Methods | Endpoint | Purpose |
+|---|---|---|
+| `GET`, `POST` | `/api/categories/` | List or create categories |
+| `GET`, `PUT`, `PATCH`, `DELETE` | `/api/categories/<id>/` | Retrieve, update or delete a category |
+| `GET`, `POST` | `/api/accounts/` | List or create financial accounts |
+| `GET`, `PUT`, `PATCH`, `DELETE` | `/api/accounts/<id>/` | Retrieve, update or delete an account |
+| `GET`, `POST` | `/api/transactions/` | List or create transactions |
+| `GET`, `PUT`, `PATCH`, `DELETE` | `/api/transactions/<id>/` | Retrieve, update or delete a transaction |
+| `GET` | `/api/reports/` | Retrieve a financial report |
+
+Protected API requests use a JWT bearer token:
 
 ```http
 Authorization: Bearer YOUR_ACCESS_TOKEN
 ```
 
-### Finance Endpoints
+Users should only be able to access their own financial records through the authenticated API.
 
-| Endpoint | Purpose |
-|---|---|
-| `/api/accounts/` | List and create accounts |
-| `/api/accounts/<id>/` | Retrieve, update, or delete an account |
-| `/api/categories/` | List and create categories |
-| `/api/categories/<id>/` | Retrieve, update, or delete a category |
-| `/api/transactions/` | List and create transactions |
-| `/api/transactions/<id>/` | Retrieve, update, or delete a transaction |
-| `/api/reports/` | Retrieve financial reports |
+## Postman collection
 
-Authenticated users can access only the financial data permitted for their account.
+**Collection file:** [Finora API — Postman collection JSON](postman/personal-finance-tracker.postman_collection.json)
 
-## OpenAPI Schema Validation
+The JSON file is included in this repository and can be imported into Postman. This is a repository file link, not a separately published Postman web-documentation URL. To create a public Postman documentation link, import the collection into your Postman account and use Postman's Share/Publish documentation feature; then replace or supplement the link above with the actual generated URL.
 
-Validate the API schema with:
+### Import and use
+
+1. Open [Postman](https://web.postman.co/).
+2. Choose **Import** and select `postman/personal-finance-tracker.postman_collection.json` from this project.
+3. The collection's `baseUrl` is set to `http://142.44.160.226`. For local testing, change it to `http://127.0.0.1:8000` in the collection variables.
+4. Register a test account and verify the email using the code delivered to the configured email address.
+5. Run **Login**. On a successful response, the collection stores the `access` and `refresh` tokens.
+6. Requests that require authentication use `Authorization: Bearer {{access}}`.
+7. Replace example values such as `REPLACE_WITH_CURRENT_PASSWORD`, `REPLACE_WITH_EMAIL_CODE`, and the resource IDs with values from your test account. Create a category and account before creating a transaction.
+
+### API schema validation
 
 ```bash
 python manage.py spectacular --validate
 ```
 
-## Project Configuration
+## Deployment notes
 
-The `.env.example` file documents the environment variables needed to configure the application. Create your own `.env` file locally; do not commit it.
+The application is deployed on a VPS and served by Gunicorn behind Nginx. The current public entry point is http://142.44.160.226/. The `finora` systemd service is configured to start automatically on boot (`systemctl is-enabled finora` should return `enabled`).
 
-Database migrations are included in the project and should be applied with `python manage.py migrate`.
+Useful server commands:
 
-## Deployment
+```bash
+sudo systemctl status finora --no-pager
+sudo systemctl restart finora
+sudo journalctl -u finora -n 100 --no-pager
+sudo nginx -t
+sudo systemctl reload nginx
+```
 
-Production deployment requires a configured PostgreSQL database, production environment variables, an appropriate `ALLOWED_HOSTS` setting, static-file configuration, and a production application server.
+The server still depends on the VPS provider, network availability, and active service billing. Automatic service startup does not replace database backups or monitoring.
 
-Deployment instructions and the production URL will be added after deployment is completed.
+## Security notes
+
+- Never commit `.env`, SMTP app passwords, database credentials, JWTs, or `SECRET_KEY`.
+- Do not publish real user credentials or email verification codes.
+- Use `DEBUG=False` and HTTPS for a production deployment before enabling secure-cookie settings.
+- Back up the PostgreSQL database regularly.
 
 ## License
 
-This project was developed as an educational portfolio project. No separate open-source license has been specified.
+Educational portfolio project. No separate open-source license has been specified.

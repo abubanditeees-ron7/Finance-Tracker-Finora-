@@ -1,13 +1,13 @@
 {
   "info": {
-    "name": "Personal Finance Tracker API",
-    "description": "Authentication, categories, accounts, transactions and reports.",
+    "name": "Finora API",
+    "description": "Finora REST API collection: registration, email verification, JWT authentication, accounts, categories, transactions, profiles and reports. Import this JSON into Postman. Set baseUrl to the deployed server or local development server.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://127.0.0.1:8000"
+      "value": "http://142.44.160.226"
     },
     {
       "key": "access",
@@ -124,7 +124,17 @@
           "mode": "raw",
           "raw": "{\n  \"refresh\": \"{{refresh}}\"\n}"
         },
-        "url": "{{baseUrl}}/api/auth/token/refresh/"
+        "url": "{{baseUrl}}/api/auth/token/refresh/",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        }
       }
     },
     {
@@ -137,7 +147,17 @@
             "value": "Bearer {{access}}"
           }
         ],
-        "url": "{{baseUrl}}/api/categories/"
+        "url": "{{baseUrl}}/api/categories/",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        }
       }
     },
     {
@@ -158,7 +178,76 @@
           "mode": "raw",
           "raw": "{\n  \"name\": \"Food\",\n  \"kind\": \"expense\",\n  \"color\": \"#F97316\"\n}"
         },
-        "url": "{{baseUrl}}/api/categories/"
+        "url": "{{baseUrl}}/api/categories/",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201 || pm.response.code === 200) {",
+              "  const data = pm.response.json();",
+              "  pm.collectionVariables.set('categoryId', String(data.id));",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Category",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": "{{baseUrl}}/api/categories/{{categoryId}}/"
+      }
+    },
+    {
+      "name": "Update Category",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": "{{baseUrl}}/api/categories/{{categoryId}}/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Food Updated\",\n  \"kind\": \"expense\",\n  \"color\": \"#F97316\"\n}"
+        }
       }
     },
     {
@@ -171,7 +260,103 @@
             "value": "Bearer {{access}}"
           }
         ],
-        "url": "{{baseUrl}}/api/accounts/"
+        "url": "{{baseUrl}}/api/accounts/",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create Account",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/accounts/",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Main Wallet\",\n  \"account_type\": \"cash\",\n  \"bank_name\": \"\",\n  \"card_number\": \"\",\n  \"color\": \"#2563EB\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201 || pm.response.code === 200) {",
+              "  const data = pm.response.json();",
+              "  pm.collectionVariables.set('accountId', String(data.id));",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Account",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": "{{baseUrl}}/api/accounts/{{accountId}}/"
+      }
+    },
+    {
+      "name": "Update Account",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": "{{baseUrl}}/api/accounts/{{accountId}}/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Main Wallet Updated\",\n  \"account_type\": \"cash\",\n  \"bank_name\": \"\",\n  \"card_number\": \"\",\n  \"color\": \"#2563EB\"\n}"
+        }
       }
     },
     {
@@ -184,7 +369,17 @@
             "value": "Bearer {{access}}"
           }
         ],
-        "url": "{{baseUrl}}/api/transactions/?page=1&page_size=10"
+        "url": "{{baseUrl}}/api/transactions/?page=1&page_size=10",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        }
       }
     },
     {
@@ -205,7 +400,76 @@
           "mode": "raw",
           "raw": "{\n  \"account\": {{accountId}},\n  \"category\": {{categoryId}},\n  \"kind\": \"expense\",\n  \"amount\": \"25000.00\",\n  \"date\": \"2026-10-11\",\n  \"comment\": \"Lunch\"\n}"
         },
-        "url": "{{baseUrl}}/api/transactions/"
+        "url": "{{baseUrl}}/api/transactions/",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201 || pm.response.code === 200) {",
+              "  const data = pm.response.json();",
+              "  pm.collectionVariables.set('transactionId', String(data.id));",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Transaction",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": "{{baseUrl}}/api/transactions/{{transactionId}}/"
+      }
+    },
+    {
+      "name": "Update Transaction",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": "{{baseUrl}}/api/transactions/{{transactionId}}/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"account\": \"{{accountId}}\",\n  \"category\": \"{{categoryId}}\",\n  \"kind\": \"expense\",\n  \"amount\": \"25000.00\",\n  \"date\": \"2026-10-11\",\n  \"comment\": \"Lunch updated\"\n}"
+        }
       }
     },
     {
@@ -218,7 +482,17 @@
             "value": "Bearer {{access}}"
           }
         ],
-        "url": "{{baseUrl}}/api/reports/?period=month"
+        "url": "{{baseUrl}}/api/reports/?period=month",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        }
       }
     },
     {
@@ -231,7 +505,197 @@
             "value": "Bearer {{access}}"
           }
         ],
-        "url": "{{baseUrl}}/api/reports/?period=custom&date_from=2026-10-01&date_to=2026-10-11"
+        "url": "{{baseUrl}}/api/reports/?period=custom&date_from=2026-10-01&date_to=2026-10-11",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Profile",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/auth/profile/",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Update Profile",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/auth/profile/",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"postman_test\",\n  \"language\": \"en\",\n  \"phone\": \"\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Change Password",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/auth/profile/password/",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"current_password\": \"REPLACE_WITH_CURRENT_PASSWORD\",\n  \"new_password\": \"ReplaceWithStrongNewPassword123!\",\n  \"new_password_confirm\": \"ReplaceWithStrongNewPassword123!\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Request Email Change",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/auth/profile/email/request/",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"new_email\": \"new-email@example.com\",\n  \"current_password\": \"REPLACE_WITH_CURRENT_PASSWORD\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Confirm Email Change",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/auth/profile/email/confirm/",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"new_email\": \"new-email@example.com\",\n  \"code\": \"REPLACE_WITH_EMAIL_CODE\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Delete Transaction",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": "{{baseUrl}}/api/transactions/{{transactionId}}/"
+      }
+    },
+    {
+      "name": "Delete Category",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": "{{baseUrl}}/api/categories/{{categoryId}}/"
+      }
+    },
+    {
+      "name": "Delete Account",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": "{{baseUrl}}/api/accounts/{{accountId}}/"
       }
     }
   ]
